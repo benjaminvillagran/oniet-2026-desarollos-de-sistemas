@@ -11,6 +11,7 @@ arranque y que las páginas principales respondan. Termina con código 1 si algo
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -33,7 +34,12 @@ def registrar(nombre: str, ok: bool, detalle: str = "", obligatorio: bool = True
         fallas.append(nombre)
     else:
         marca = "[AVISO]"
-    print(f"{marca} {nombre}" + (f" -> {detalle}" if detalle else ""))
+    linea = f"{marca} {nombre}" + (f" -> {detalle}" if detalle else "")
+    print(linea)
+    resumen_github = os.environ.get("GITHUB_STEP_SUMMARY")  # resumen visible en GitHub Actions
+    if resumen_github:
+        with open(resumen_github, "a", encoding="utf-8") as archivo:
+            archivo.write(f"- `{marca}` {nombre}" + (f": {detalle}" if detalle else "") + "\n")
 
 
 def ejecutar(comando: list[str]) -> subprocess.CompletedProcess:
