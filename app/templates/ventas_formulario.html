@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Nueva venta{% endblock %}
+{% block contenido %}
+<section class="encabezado">
+    <div>
+        <h1>Nueva venta</h1>
+        <p class="texto-suave">Carga manual de una venta. Se valida con las mismas reglas que la importación.</p>
+    </div>
+</section>
+
+{% set tipos = {'fecha': 'date', 'cantidad': 'number', 'precio_unitario': 'text'} %}
+<section class="tarjeta formulario-angosto">
+    <form method="post" class="formulario" novalidate>
+        {% for columna in columnas %}
+            {% set campo = columna.campo %}
+            <div class="campo {{ 'campo--error' if errores[campo] }}">
+                <label for="{{ campo }}">{{ columna.descripcion }}</label>
+                <input id="{{ campo }}" name="{{ campo }}" type="{{ tipos.get(campo, 'text') }}"
+                       value="{{ datos.get(campo, '') }}" placeholder="{{ columna.ejemplo }}"
+                       {% if campo == 'categoria' %}list="lista-categorias"{% endif %}
+                       {% if campo == 'cantidad' %}min="1" step="1"{% endif %}
+                       {% if campo == 'precio_unitario' %}inputmode="decimal"{% endif %}>
+                {% if errores[campo] %}<span class="mensaje-error">{{ errores[campo] }}</span>{% endif %}
+            </div>
+        {% endfor %}
+        <datalist id="lista-categorias">
+            {% for categoria in categorias %}<option value="{{ categoria }}">{% endfor %}
+        </datalist>
+        <div class="acciones">
+            <button class="boton" type="submit">Guardar venta</button>
+            <a class="boton boton--secundario" href="{{ url_for('ventas.listado') }}">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

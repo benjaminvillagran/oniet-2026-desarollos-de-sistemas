@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block titulo %}Inicio{% endblock %} · {{ nombre_sistema }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+    <header class="barra-superior">
+        <div class="contenedor barra-superior__contenido">
+            <a class="marca" href="{{ url_for('principal.inicio') }}">{{ nombre_sistema }}</a>
+            <nav class="menu" aria-label="Menú principal">
+                {% set seccion = request.endpoint or '' %}
+                <a href="{{ url_for('principal.inicio') }}" class="{{ 'activo' if seccion == 'principal.inicio' }}">Inicio</a>
+                <a href="{{ url_for('importacion.importar') }}" class="{{ 'activo' if seccion == 'importacion.importar' }}">Importar</a>
+                <a href="{{ url_for('ventas.listado') }}" class="{{ 'activo' if seccion == 'ventas.listado' }}">Ventas</a>
+                <a href="{{ url_for('ventas.nueva') }}" class="{{ 'activo' if seccion == 'ventas.nueva' }}">Nueva venta</a>
+                <a href="{{ url_for('reportes.estadisticas') }}" class="{{ 'activo' if seccion == 'reportes.estadisticas' }}">Estadísticas</a>
+                <a href="{{ url_for('importacion.historial') }}" class="{{ 'activo' if seccion == 'importacion.historial' }}">Historial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="contenedor contenido">
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="alerta alerta--{{ categoria if categoria in ['exito', 'error', 'aviso'] else 'info' }}" role="alert">{{ mensaje }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        {% block contenido %}{% endblock %}
+    </main>
+
+    <footer class="pie">
+        <div class="contenedor">{{ nombre_sistema }} · {{ nombre_equipo }} · ONIET 2026</div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

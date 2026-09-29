@@ -1,0 +1,18 @@
+fecha,local,visitante,goles_local,goles_visitante
+2026-08-02,Escuela Técnica 1,Colegio Nacional,3,1
+2026-08-03,Escuela Técnica 1,Instituto San José,2,0
+2026-08-04,Escuela Técnica 1,Escuela Normal,0,1
+2026-08-05,Escuela Técnica 1,IPEM 25,1,1
+2026-08-06,Escuela Técnica 1,Colegio del Sol,1,1
+2026-08-07,Colegio Nacional,Instituto San José,2,3
+2026-08-08,Colegio Nacional,Escuela Normal,0,3
+2026-08-09,Colegio Nacional,IPEM 25,1,0
+2026-08-10,Colegio Nacional,Colegio del Sol,2,2
+2026-08-11,Instituto San José,Escuela Normal,3,2
+2026-08-12,Instituto San José,IPEM 25,3,2
+2026-08-13,Instituto San José,Colegio del Sol,2,1
+2026-08-14,Escuela Normal,IPEM 25,0,0
+2026-08-15,Escuela Normal,Colegio del Sol,1,2
+2026-08-16,IPEM 25,Colegio del Sol,0,1
+2026-09-01,IPEM 25,IPEM 25,1,0
+2026-09-02,Colegio del Sol,Escuela Normal,-1,2

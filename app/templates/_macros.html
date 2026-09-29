@@ -1,0 +1,62 @@
+{# Componentes reutilizables. Uso: {% from "_macros.html" import kpi, paginacion %} #}
+
+{% macro kpi(etiqueta, valor, detalle='') %}
+<div class="kpi">
+    <span class="kpi__etiqueta">{{ etiqueta }}</span>
+    <span class="kpi__valor">{{ valor }}</span>
+    {% if detalle %}<span class="kpi__detalle">{{ detalle }}</span>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro filtros_ventas(filtros, categorias, destino) %}
+<form class="filtros" method="get" action="{{ destino }}">
+    <div class="campo">
+        <label for="busqueda">Buscar</label>
+        <input id="busqueda" name="busqueda" type="search" value="{{ filtros.busqueda }}" placeholder="Producto o categoría">
+    </div>
+    <div class="campo">
+        <label for="categoria">Categoría</label>
+        <select id="categoria" name="categoria">
+            <option value="">Todas</option>
+            {% for categoria in categorias %}
+                <option value="{{ categoria }}" {{ 'selected' if categoria == filtros.categoria }}>{{ categoria }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="campo">
+        <label for="desde">Desde</label>
+        <input id="desde" name="desde" type="date" value="{{ filtros.desde }}">
+    </div>
+    <div class="campo">
+        <label for="hasta">Hasta</label>
+        <input id="hasta" name="hasta" type="date" value="{{ filtros.hasta }}">
+    </div>
+    <div class="filtros__acciones">
+        <button class="boton" type="submit">Filtrar</button>
+        {% if filtros.activos %}<a class="boton boton--secundario" href="{{ destino }}">Limpiar</a>{% endif %}
+    </div>
+</form>
+{% endmacro %}
+
+{% macro encabezado_ordenable(columna, titulo, orden, direccion, filtros, clase='') %}
+{% set nueva_direccion = 'asc' if (orden == columna and direccion == 'desc') else 'desc' %}
+<th class="{{ clase }}">
+    <a class="ordenable" href="{{ url_for('ventas.listado', orden=columna, direccion=nueva_direccion, **filtros.como_diccionario()) }}">
+        {{ titulo }}{% if orden == columna %} {{ '▲' if direccion == 'asc' else '▼' }}{% endif %}
+    </a>
+</th>
+{% endmacro %}
+
+{% macro paginacion(pagina, paginas, parametros) %}
+{% if paginas > 1 %}
+<nav class="paginacion" aria-label="Paginación">
+    {% if pagina > 1 %}
+        <a class="boton boton--secundario boton--chico" href="{{ url_for(request.endpoint, pagina=pagina - 1, **parametros) }}">← Anterior</a>
+    {% endif %}
+    <span>Página {{ pagina }} de {{ paginas }}</span>
+    {% if pagina < paginas %}
+        <a class="boton boton--secundario boton--chico" href="{{ url_for(request.endpoint, pagina=pagina + 1, **parametros) }}">Siguiente →</a>
+    {% endif %}
+</nav>
+{% endif %}
+{% endmacro %}

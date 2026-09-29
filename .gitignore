@@ -1,0 +1,28 @@
+# Entorno virtual de Python
+.venv/
+venv/
+env/
+
+# Archivos generados por Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Base de datos local (se crea sola al iniciar el sistema)
+instance/
+*.db
+*.sqlite3
+
+# Contexto generado para pegar en chats de IA
+contexto_ia.txt
+
+# Editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+.env
