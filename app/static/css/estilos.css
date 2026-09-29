@@ -86,7 +86,7 @@ code { background: #eef2ff; padding: 0.1rem 0.35rem; border-radius: 4px; font-si
     box-shadow: var(--sombra); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.15rem;
 }
 .kpi__etiqueta { color: var(--color-texto-suave); font-size: 0.85rem; }
-.kpi__valor { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kpi__valor { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .kpi__detalle { color: var(--color-texto-suave); font-size: 0.8rem; }
 
 .pasos {
@@ -123,7 +123,7 @@ code { background: #eef2ff; padding: 0.1rem 0.35rem; border-radius: 4px; font-si
 .campo label { font-weight: 600; font-size: 0.9rem; }
 .campo input, .campo select {
     font: inherit; padding: 0.5rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 8px;
-    background: #fff; color: var(--color-texto); min-width: 0;
+    background: #fff; color: var(--color-texto); min-width: 0; height: 2.5rem;
 }
 .campo input:focus, .campo select:focus {
     outline: 2px solid var(--color-info-fondo); border-color: var(--color-primario);

@@ -100,7 +100,8 @@
 
 {% block scripts %}
 {% if datos.resumen.cantidad_ventas %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{# Chart.js 4.4.4 (licencia MIT) incluido en el proyecto: funciona sin internet #}
+<script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.js') }}"></script>
 <script src="{{ url_for('static', filename='js/graficos.js') }}"></script>
 {% endif %}
 {% endblock %}

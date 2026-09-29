@@ -17,7 +17,16 @@ from pathlib import Path
 CARPETA_PROYECTO = Path(__file__).resolve().parent.parent
 ARCHIVO_SALIDA = CARPETA_PROYECTO / "contexto_ia.txt"
 EXTENSIONES = {".py", ".sql", ".html", ".css", ".js", ".md", ".txt", ".toml"}
-IGNORAR = {".venv", "venv", "__pycache__", ".git", ".pytest_cache", ".ruff_cache", "instance"}
+IGNORAR = {
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".git",
+    ".pytest_cache",
+    ".ruff_cache",
+    "instance",
+    "vendor",
+}
 SIEMPRE_PRIMERO = ["AGENTS.md", "README.md", "app/schema.sql"]
 
 

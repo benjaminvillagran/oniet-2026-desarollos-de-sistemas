@@ -1,14 +1,14 @@
-// Gráficos de la página de estadísticas (usa Chart.js, que se carga desde internet).
+// Gráficos de la página de estadísticas (usa Chart.js, incluido en static/vendor/chartjs).
 // Los datos los pone el servidor en <script id="datos-graficos" type="application/json">.
 (function () {
     var nodoDatos = document.getElementById("datos-graficos");
     if (!nodoDatos) return;
 
-    // Sin internet no carga Chart.js: se avisa y quedan las tablas con los mismos datos.
+    // Si Chart.js no cargó por algún motivo, se avisa y quedan las tablas con los mismos datos.
     if (typeof Chart === "undefined") {
         document.querySelectorAll(".grafico").forEach(function (contenedor) {
             contenedor.innerHTML =
-                '<p class="texto-suave">No se pudo cargar el gráfico (sin conexión). Los datos están en la tabla.</p>';
+                '<p class="texto-suave">No se pudo cargar el gráfico. Los datos están en la tabla.</p>';
             contenedor.style.height = "auto";
         });
         return;
