@@ -5,11 +5,13 @@ description: Prueba el sistema web como lo haría el jurado, recorriendo todas l
 
 # Probar el sistema en el navegador
 
-Precondición: el sistema corriendo con `python run.py` en http://127.0.0.1:5000.
-Si no está corriendo, pedí que lo inicien (o inicialo en una terminal aparte).
+Precondición: el sistema ya está corriendo en http://127.0.0.1:5000, iniciado por la persona en
+su propia terminal con `python run.py`. **No inicies el servidor vos**: en Windows la terminal del
+agente se queda en "Running…" con procesos que no terminan. Si no responde, pedí que lo inicien.
 
 En Antigravity usá el agente de navegador (`/browser`). En Claude Code, si no hay navegador
-disponible, hacé las mismas pruebas con el cliente de pruebas de Flask o con `curl`.
+disponible, hacé las mismas pruebas con el cliente de pruebas de Flask
+(`app.test_client()`, como en `tests/test_rutas.py`).
 
 ## Recorrido
 

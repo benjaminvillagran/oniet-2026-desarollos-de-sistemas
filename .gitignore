@@ -26,3 +26,7 @@ contexto_ia.txt
 Thumbs.db
 *.log
 .env
+
+# Copias de trabajo temporales de agentes de IA
+.claude/worktrees/
+.claude/settings.local.json
