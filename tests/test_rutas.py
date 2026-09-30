@@ -55,6 +55,8 @@ def test_importar_archivo_sin_columnas_obligatorias(importar):
     assert "Faltan columnas obligatorias" in html
 
 
+# Propio del ejemplo de ventas (no tiene clave única). Si la consigna tiene un campo único,
+# este test se reemplaza por uno como test_clave_unica_no_permite_repetidos.
 def test_importar_dos_veces_el_mismo_archivo_no_duplica(cliente, importar):
     importar(CSV_VALIDO)
     html = importar(CSV_VALIDO).get_data(as_text=True)
@@ -171,3 +173,63 @@ def test_detalle_y_edicion(cliente, importar):
 
     assert cliente.get("/ventas/999").status_code == 404
     assert cliente.get("/ventas/999/editar").status_code == 404
+
+
+def test_pagina_fuera_de_rango_muestra_la_ultima(cliente, importar):
+    importar(CSV_VALIDO)
+    for pagina in ("5", "99999999999999999999"):
+        html = cliente.get(f"/ventas/?pagina={pagina}").get_data(as_text=True)
+        assert "Alfajor" in html and "Todavía no hay ventas" not in html
+
+
+def test_rechaza_formularios_enviados_desde_otro_sitio(cliente, importar):
+    importar(CSV_VALIDO)
+    ataque = cliente.post("/ventas/vaciar", headers={"Origin": "https://sitio-malicioso.example"})
+    assert ataque.status_code == 403
+    assert len(cliente.get("/api/ventas").get_json()) == 3
+
+    propio = cliente.post("/ventas/vaciar", headers={"Origin": "http://localhost"})
+    assert propio.status_code == 302
+
+
+def test_exportacion_para_excel_en_espanol(cliente, importar):
+    importar(
+        "fecha;producto;categoria;cantidad;precio_unitario\n15/03/2026;=HYPERLINK(1);C;2;900,5\n"
+    )
+    texto = cliente.get("/exportar.csv").get_data(as_text=True)
+    assert ";900,5;1801,0" in texto  # coma decimal
+    assert "'=HYPERLINK(1)" in texto  # Excel no lo ejecuta como fórmula
+
+
+def test_fila_con_valores_de_mas_no_se_guarda(importar):
+    html = importar(
+        "fecha,producto,categoria,cantidad,precio_unitario\n15/03/2026,Pan,K,2,1200,50\n"
+    )
+    assert "Se guardaron 0 de 1 filas" in html.get_data(as_text=True)
+    assert "más valores que columnas" in html.get_data(as_text=True)
+
+
+def test_clave_unica_no_permite_repetidos(cliente, importar, monkeypatch):
+    from app.servicios import validacion
+
+    monkeypatch.setattr(validacion, "CLAVE_UNICA", "producto")
+    html = importar(CSV_VALIDO).get_data(as_text=True)  # "Alfajor" aparece 2 veces
+    assert "Se guardaron 2 de 3 filas" in html
+    assert "repetido en el archivo (igual que la fila 2)" in html
+
+    otro = "fecha;producto;categoria;cantidad;precio_unitario\n01/05/2026;Agua;Bebidas;1;900\n"
+    assert "Ya existe un registro guardado" in importar(otro).get_data(as_text=True)
+    assert len(cliente.get("/api/ventas").get_json()) == 2
+
+
+def test_error_interno_muestra_la_pagina_propia(app):
+    app.config["PROPAGATE_EXCEPTIONS"] = False  # así corre run.py
+
+    def ruta_que_falla():
+        raise RuntimeError("detalle técnico que el jurado no tiene que ver")
+
+    app.add_url_rule("/falla", view_func=ruta_que_falla)
+    respuesta = app.test_client().get("/falla")
+    assert respuesta.status_code == 500
+    html = respuesta.get_data(as_text=True)
+    assert "Error interno" in html and "detalle técnico" not in html

@@ -1,11 +1,18 @@
 import email.message
 import io
 import json
+import urllib.error
 import urllib.request
 
 import pytest
 
-from app.servicios.lector import ErrorLectura, descargar, detectar_separador, leer_archivo
+from app.servicios.lector import (
+    VALORES_DE_MAS,
+    ErrorLectura,
+    descargar,
+    detectar_separador,
+    leer_archivo,
+)
 
 
 def test_lee_csv_con_punto_y_coma_y_normaliza_encabezados():
@@ -37,7 +44,7 @@ def test_csv_con_campos_entre_comillas():
 
 def test_lee_json_lista_y_objeto_con_lista():
     lista = json.dumps([{"Producto": "Agua", "cantidad": 2}]).encode()
-    envuelto = json.dumps({"ventas": [{"producto": "Agua"}, {"producto": "Pan"}]}).encode()
+    envuelto = json.dumps({"datos": [{"producto": "Agua"}, {"producto": "Pan"}]}).encode()
     assert leer_archivo("a.json", lista)[0].datos == {"producto": "Agua", "cantidad": 2}
     assert len(leer_archivo("b.json", envuelto)) == 2
 
@@ -89,8 +96,8 @@ def test_descargar_desde_una_api(monkeypatch):
     monkeypatch.setattr(
         urllib.request, "urlopen", lambda pedido, timeout: RespuestaFalsa(datos, "application/json")
     )
-    nombre, contenido = descargar("https://api.ejemplo.com/ventas?anio=2026", 1000)
-    assert (nombre, contenido) == ("ventas.json", datos)
+    nombre, contenido = descargar("https://api.ejemplo.com/registros?anio=2026", 1000)
+    assert (nombre, contenido) == ("registros.json", datos)
 
 
 @pytest.mark.parametrize(
@@ -111,7 +118,7 @@ def test_descargar_limita_el_tamanio(monkeypatch):
 
 
 def test_saltea_titulos_arriba_del_encabezado_en_csv_y_excel():
-    csv_con_titulo = "Reporte de ventas;;\n;;\nfecha;producto;cantidad\n15/03/2026;Pan;2\n"
+    csv_con_titulo = "Informe mensual;;\n;;\nfecha;producto;cantidad\n15/03/2026;Pan;2\n"
     filas = leer_archivo("reporte.csv", csv_con_titulo.encode())
     assert filas[0].datos == {"fecha": "15/03/2026", "producto": "Pan", "cantidad": "2"}
     assert filas[0].numero == 4
@@ -136,11 +143,11 @@ def test_archivo_de_una_sola_columna():
 def test_json_de_api_con_lista_anidada():
     respuesta = {"estado": "ok", "data": {"total": 2, "items": [{"a": 1}, {"a": 2}]}}
     assert len(leer_archivo("api.json", json.dumps(respuesta).encode())) == 2
-    ambiguo = {"ventas": [{"a": 1}], "compras": [{"b": 2}]}
+    ambiguo = {"altas": [{"a": 1}], "bajas": [{"b": 2}]}
     with pytest.raises(ErrorLectura, match="una sola lista"):
         leer_archivo("ambiguo.json", json.dumps(ambiguo).encode())
     with pytest.raises(ErrorLectura, match="no tiene filas"):
-        leer_archivo("vacio.json", b'{"ventas": []}')
+        leer_archivo("vacio.json", b'{"datos": []}')
 
 
 def test_geojson_de_datos_abiertos():
@@ -152,3 +159,50 @@ def test_geojson_de_datos_abiertos():
     }
     filas = leer_archivo("barrios.json", json.dumps(geojson).encode())
     assert filas[0].datos == {"nombre_barrio": "Las Flores"}
+
+
+def test_csv_utf16_de_excel_texto_unicode():
+    contenido = "fecha\tproducto\n15/03/2026\tPan\n".encode("utf-16")
+    assert leer_archivo("datos.txt", contenido)[0].datos == {
+        "fecha": "15/03/2026",
+        "producto": "Pan",
+    }
+
+
+def test_comillas_sin_cerrar_dan_error_claro():
+    contenido = b'a,b\n"sin cerrar,' + b"x" * 200_000 + b"\n"
+    with pytest.raises(ErrorLectura, match="comillas sin cerrar"):
+        leer_archivo("roto.csv", contenido)
+
+
+def test_separador_con_titulo_que_tiene_comas():
+    texto = "Informe, marzo 2026\nfecha;producto;cantidad\n15/03/2026;Pan;2\n"
+    filas = leer_archivo("informe.csv", texto.encode())
+    assert filas[0].datos == {"fecha": "15/03/2026", "producto": "Pan", "cantidad": "2"}
+
+
+def test_fila_con_valores_de_mas_se_marca():
+    filas = leer_archivo("coma.csv", b"producto,precio\nPan,1200,50\nAgua,900\n")
+    assert filas[0].datos[VALORES_DE_MAS] == 1
+    assert VALORES_DE_MAS not in filas[1].datos
+
+
+def test_json_con_claves_que_se_pisan():
+    with pytest.raises(ErrorLectura, match="repetidas"):
+        leer_archivo("a.json", b'[{"Precio": 1, "precio": 2}]')
+
+
+def test_errores_de_descarga_con_mensajes_claros(monkeypatch):
+    def sin_conexion(pedido, timeout):
+        raise urllib.error.URLError("Name or service not known")
+
+    monkeypatch.setattr(urllib.request, "urlopen", sin_conexion)
+    with pytest.raises(ErrorLectura, match="Revisá que esté bien escrita y que haya conexión"):
+        descargar("https://no-existe.example/datos.csv", 1000)
+
+    def no_encontrado(pedido, timeout):
+        raise urllib.error.HTTPError(pedido.full_url, 404, "Not Found", None, None)
+
+    monkeypatch.setattr(urllib.request, "urlopen", no_encontrado)
+    with pytest.raises(ErrorLectura, match="404"):
+        descargar("https://ejemplo.com/falta.csv", 1000)

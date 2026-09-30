@@ -45,6 +45,11 @@ ALIAS = {
 
 LARGO_MAXIMO_TEXTO = 100
 
+# Si la consigna dice que un campo no se puede repetir ("NumeroRegistro es único"), poner acá su
+# nombre (ej.: CLAVE_UNICA = "numero_registro"). La importación rechaza los valores repetidos, en
+# el archivo o ya guardados, e informa fila y motivo. En el ejemplo de ventas no hay clave única.
+CLAVE_UNICA: str | None = None
+
 
 @dataclass
 class ErrorValidacion:
@@ -56,6 +61,7 @@ class ErrorValidacion:
 @dataclass
 class ResultadoValidacion:
     validos: list[dict[str, Any]] = field(default_factory=list)
+    filas_validas: list[int] = field(default_factory=list)  # número de fila de cada válido
     errores: list[ErrorValidacion] = field(default_factory=list)
 
     @property
@@ -155,4 +161,5 @@ def validar_filas(filas: list[FilaLeida]) -> ResultadoValidacion:
             )
         else:
             resultado.validos.append(venta)
+            resultado.filas_validas.append(fila.numero)
     return resultado

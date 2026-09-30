@@ -140,6 +140,13 @@ def obtener_por_id(venta_id: int) -> dict[str, Any] | None:
     return dict(fila) if fila else None
 
 
+def valores_de(columna: str) -> set[Any]:
+    """Todos los valores guardados de una columna (sirve para detectar claves repetidas)."""
+    if columna not in COLUMNAS_ORDENABLES:  # solo columnas conocidas: nunca texto del usuario
+        raise ValueError(f"Columna desconocida: {columna}")
+    return {fila[0] for fila in obtener_db().execute(f"SELECT {columna} FROM ventas")}
+
+
 def listar_categorias() -> list[str]:
     filas = obtener_db().execute("SELECT DISTINCT categoria FROM ventas ORDER BY categoria")
     return [fila["categoria"] for fila in filas]

@@ -1,6 +1,7 @@
 """Formato de valores para mostrar en pantalla (estilo argentino).
 
-Se registran como filtros de Jinja:  {{ venta.total | moneda }}  ->  $ 1.234,50
+Se registran como filtros de Jinja:  {{ 1234.5 | moneda }} -> $ 1.234,50
+{{ 0.375 | numero(2) }} -> 0,38 (numero lleva 0 decimales si no se indica)
 """
 
 from __future__ import annotations

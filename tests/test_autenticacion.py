@@ -1,8 +1,7 @@
 """Login opcional: registro, ingreso, último acceso, páginas protegidas y cambio de clave."""
 
-import pytest
-
-from app import create_app
+# Una página cualquiera que existe en la plantilla y no depende del problema (no es de "ventas")
+PAGINA_PROTEGIDA = "/importar/historial"
 
 
 def registrar(cliente, nombre="ana", clave="secreta1", confirmacion=None):
@@ -18,16 +17,8 @@ def ingresar(cliente, nombre="ana", clave="secreta1", siguiente=None):
     return cliente.post(url, data={"nombre_usuario": nombre, "clave": clave})
 
 
-@pytest.fixture
-def cliente_con_login(tmp_path):
-    app = create_app(
-        {"TESTING": True, "DATABASE": str(tmp_path / "login.db"), "LOGIN_OBLIGATORIO": True}
-    )
-    return app.test_client()
-
-
 def test_sin_login_obligatorio_todo_es_accesible(cliente):
-    assert cliente.get("/ventas/").status_code == 200
+    assert cliente.get(PAGINA_PROTEGIDA).status_code == 200
     assert "Ingresar" not in cliente.get("/").get_data(as_text=True)
 
 
@@ -57,18 +48,18 @@ def test_ingreso_y_ultimo_acceso(cliente):
 
 
 def test_login_obligatorio_protege_las_paginas(cliente_con_login):
-    respuesta = cliente_con_login.get("/ventas/")
+    respuesta = cliente_con_login.get(PAGINA_PROTEGIDA)
     assert respuesta.status_code == 302
-    assert "/ingresar?siguiente=/ventas/" in respuesta.headers["Location"]
+    assert f"/ingresar?siguiente={PAGINA_PROTEGIDA}" in respuesta.headers["Location"]
     assert cliente_con_login.get("/registrarse").status_code == 200
 
     registrar(cliente_con_login)
-    respuesta = ingresar(cliente_con_login, siguiente="/ventas/")
-    assert respuesta.headers["Location"] == "/ventas/"
-    assert cliente_con_login.get("/ventas/").status_code == 200
+    respuesta = ingresar(cliente_con_login, siguiente=PAGINA_PROTEGIDA)
+    assert respuesta.headers["Location"] == PAGINA_PROTEGIDA
+    assert cliente_con_login.get(PAGINA_PROTEGIDA).status_code == 200
 
     cliente_con_login.post("/salir")
-    assert cliente_con_login.get("/ventas/").status_code == 302
+    assert cliente_con_login.get(PAGINA_PROTEGIDA).status_code == 302
 
 
 def test_no_redirige_a_sitios_externos(cliente):

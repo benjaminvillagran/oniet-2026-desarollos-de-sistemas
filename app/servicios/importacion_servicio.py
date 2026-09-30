@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 from collections import Counter
 from dataclasses import dataclass, field
+from typing import Any
 
 from app.db import transaccion
 from app.repositorios import importaciones_repositorio, ventas_repositorio
@@ -70,6 +71,8 @@ def importar_archivo(
 
     # 2. VALIDAR: separa filas válidas de filas con errores
     resultado = validacion.validar_filas(filas)
+    if validacion.CLAVE_UNICA:
+        _quitar_claves_repetidas(resultado, validacion.CLAVE_UNICA)
 
     # 3. PROCESAR: agrega los campos calculados de cada fila.
     #    Si el problema no tiene campos calculados por fila, este paso se omite: los cálculos
@@ -96,3 +99,24 @@ def importar_desde_url(url: str, limite_bytes: int, forzar: bool = False) -> Res
     """Descarga los datos de una URL o API y los importa igual que un archivo."""
     nombre, contenido = lector.descargar(url, limite_bytes)
     return importar_archivo(nombre, contenido, forzar)
+
+
+def _quitar_claves_repetidas(resultado: validacion.ResultadoValidacion, campo: str) -> None:
+    """Pasa a errores las filas cuya clave única ya existe en la base o se repite en el archivo."""
+    guardados = ventas_repositorio.valores_de(campo)
+    primera_fila: dict[Any, int] = {}
+    validos, filas_validas = [], []
+    for registro, numero in zip(resultado.validos, resultado.filas_validas, strict=True):
+        valor = registro[campo]
+        if valor in guardados:
+            mensaje = "Ya existe un registro guardado con ese valor."
+        elif valor in primera_fila:
+            mensaje = f"Está repetido en el archivo (igual que la fila {primera_fila[valor]})."
+        else:
+            primera_fila[valor] = numero
+            validos.append(registro)
+            filas_validas.append(numero)
+            continue
+        resultado.errores.append(ErrorValidacion(fila=numero, campo=campo, mensaje=mensaje))
+    resultado.validos, resultado.filas_validas = validos, filas_validas
+    resultado.errores.sort(key=lambda error: error.fila)

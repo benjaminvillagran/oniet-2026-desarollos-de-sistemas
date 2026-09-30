@@ -7,6 +7,7 @@ Al adaptar la plantilla, acá van los cálculos que pida la consigna.
 
 from __future__ import annotations
 
+import random
 from collections import defaultdict
 from typing import Any
 
@@ -94,6 +95,25 @@ def ranking_productos(ventas: list[Venta], limite: int = 5) -> list[dict[str, An
     ]
     ranking.sort(key=lambda fila: (-fila["facturacion"], fila["producto"]))
     return ranking[:limite]
+
+
+def primeros_n(
+    elementos: list[dict[str, Any]],
+    clave: str,
+    n: int,
+    mayor_primero: bool = True,
+    azar: random.Random | None = None,
+) -> list[dict[str, Any]]:
+    """Los N primeros según `clave`. Si hay empate, se desempata AL AZAR.
+
+    Ej.: los 3 barrios con MENOR proporción -> primeros_n(barrios, "proporcion", 3, False).
+    Para que los tests den siempre lo mismo se pasa un azar con semilla fija:
+    primeros_n(..., azar=random.Random(1)).
+    """
+    mezclados = list(elementos)
+    (azar or random.Random()).shuffle(mezclados)  # primero se desordena al azar...
+    mezclados.sort(key=lambda elemento: elemento[clave], reverse=mayor_primero)
+    return mezclados[: max(n, 0)]  # ...y como sort es estable, los empates quedan al azar
 
 
 def generar_estadisticas(ventas: list[Venta]) -> dict[str, Any]:

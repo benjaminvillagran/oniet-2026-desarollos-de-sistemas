@@ -13,7 +13,7 @@
         <h2>1. Elegí el archivo</h2>
         <form method="post" enctype="multipart/form-data" class="formulario">
             <div class="campo">
-                <label for="archivo">Archivo de ventas</label>
+                <label for="archivo">Archivo de datos</label>
                 <input id="archivo" name="archivo" type="file" required
                        accept="{% for formato in formatos %}.{{ formato }}{{ ',' if not loop.last }}{% endfor %}">
             </div>

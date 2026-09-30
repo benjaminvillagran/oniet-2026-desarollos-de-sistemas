@@ -1,3 +1,5 @@
+import random
+
 import pytest
 
 from app.servicios.procesamiento import (
@@ -6,6 +8,7 @@ from app.servicios.procesamiento import (
     facturacion_por_categoria,
     facturacion_por_mes,
     generar_estadisticas,
+    primeros_n,
     ranking_productos,
     resumen_general,
 )
@@ -81,3 +84,32 @@ def test_generar_estadisticas_con_lista_vacia():
     assert estadisticas["por_categoria"] == []
     assert estadisticas["por_mes"] == []
     assert estadisticas["top_productos"] == []
+
+
+def test_calcular_total_con_redondeo_comercial():
+    assert calcular_total(1, 1.005) == 1.01
+
+
+BARRIOS = [
+    {"nombre": "A", "proporcion": 0.5},
+    {"nombre": "B", "proporcion": 0.1},
+    {"nombre": "C", "proporcion": 0.1},
+    {"nombre": "D", "proporcion": 0.9},
+]
+
+
+def test_primeros_n_ordena_y_respeta_n():
+    mayores = primeros_n(BARRIOS, "proporcion", 2, azar=random.Random(1))
+    assert [barrio["nombre"] for barrio in mayores] == ["D", "A"]
+    assert primeros_n(BARRIOS, "proporcion", 0) == []
+
+
+def test_primeros_n_desempata_al_azar_de_forma_reproducible():
+    def menor(semilla):
+        return primeros_n(
+            BARRIOS, "proporcion", 1, mayor_primero=False, azar=random.Random(semilla)
+        )[0]
+
+    assert menor(7) == menor(7)  # con la misma semilla, siempre el mismo resultado
+    elegidos = {menor(semilla)["nombre"] for semilla in range(30)}
+    assert elegidos == {"B", "C"}  # solo los empatados, y los dos pueden salir

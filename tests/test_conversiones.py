@@ -2,7 +2,14 @@ from datetime import date, datetime
 
 import pytest
 
-from app.utils.conversiones import a_decimal, a_entero, a_fecha, normalizar_clave, normalizar_texto
+from app.utils.conversiones import (
+    a_decimal,
+    a_entero,
+    a_fecha,
+    normalizar_clave,
+    normalizar_texto,
+    redondear_dinero,
+)
 from app.utils.formato import formato_fecha, formato_mes, formato_moneda
 
 
@@ -67,3 +74,34 @@ def test_formatos_para_mostrar():
     assert formato_moneda(1234.5) == "$ 1.234,50"
     assert formato_fecha("2026-03-15") == "15/03/2026"
     assert formato_mes("2026-03") == "Mar 2026"
+
+
+@pytest.mark.parametrize(
+    ("valor", "esperado"),
+    [
+        ("1.500", 1500),
+        ("$ 1.500", 1500),
+        ("100.000", 100000),
+        ("0.500", 0.5),
+        ("1.5", 1.5),
+        ("3.14159", 3.14159),
+        ("1,234", 1.234),
+        ("1,234,567", 1234567),
+    ],
+)
+def test_punto_de_miles_argentino(valor, esperado):
+    assert a_decimal(valor) == pytest.approx(esperado)
+
+
+def test_rechaza_formatos_mezclados_y_numeros_gigantes():
+    with pytest.raises(ValueError, match="no es un número"):
+        a_decimal("1.2.3,4")
+    with pytest.raises(ValueError, match="demasiado grande"):
+        a_decimal("99999999999999999999")
+    assert a_entero("1.000") == 1000
+
+
+def test_redondeo_de_dinero_como_en_un_comercio():
+    assert redondear_dinero(1.005) == 1.01
+    assert redondear_dinero(2.675) == 2.68
+    assert redondear_dinero(3 * 0.1) == 0.3

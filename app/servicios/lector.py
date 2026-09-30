@@ -105,7 +105,7 @@ def decodificar(contenido: bytes) -> str:
 def detectar_separador(texto: str) -> str:
     """Elige el separador (';' ',' tab o '|') que más aparece en una línea.
 
-    Se miran las primeras 10 líneas con contenido: así un título como "Ventas, marzo 2026"
+    Se miran las primeras 10 líneas con contenido: así un título como "Informe, marzo 2026"
     arriba del encabezado no confunde la detección.
     """
     lineas = [linea for linea in texto.splitlines() if linea.strip()][:10]
@@ -133,7 +133,7 @@ def leer_json(texto: str) -> list[FilaLeida]:
     """Acepta los formatos más comunes de archivos y APIs:
 
     - una lista de objetos:                    [{...}, {...}]
-    - un objeto con una lista (aunque esté anidada): {"ventas": [...]}, {"data": {"items": [...]}}
+    - un objeto con una lista (aunque esté anidada): {"datos": [...]}, {"data": {"items": [...]}}
     - GeoJSON (datos abiertos con mapas):      se toman las "properties" de cada "feature"
     """
     try:
@@ -150,7 +150,7 @@ def leer_json(texto: str) -> list[FilaLeida]:
     elif isinstance(datos, dict):
         listas = _listas_de_objetos(datos)
         if not listas and any(valor == [] for valor in datos.values()):
-            listas = [[]]  # {"ventas": []}: archivo válido pero sin filas
+            listas = [[]]  # {"datos": []}: archivo válido pero sin filas
         if len(listas) != 1:
             raise ErrorLectura(
                 "El JSON debe ser una lista de objetos o tener una sola lista de objetos adentro."
@@ -207,7 +207,7 @@ def _filas_con_encabezado(filas_crudas: list[tuple[int, list]]) -> list[FilaLeid
     """Busca el encabezado y arma las filas de datos.
 
     El encabezado es la primera fila con 2 o más valores: así se saltean los títulos que suelen
-    tener los archivos exportados ("Reporte de ventas marzo"). Si ninguna fila tiene 2 valores
+    tener los archivos exportados ("Informe mensual de marzo"). Si ninguna fila tiene 2 valores
     (archivo de una sola columna), se usa la primera fila con contenido.
     """
     con_contenido = [
