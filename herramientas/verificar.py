@@ -54,15 +54,20 @@ def revisar_tests() -> None:
 
 
 def revisar_estilo(arreglar: bool) -> None:
-    ruff = shutil.which("ruff")
-    if ruff is None:
-        registrar("Estilo de código (ruff)", True, "ruff no instalado, se omite")
+    ruff = [sys.executable, "-m", "ruff"]  # el ruff del mismo entorno que este Python
+    if ejecutar([*ruff, "--version"]).returncode != 0:
+        registrar(
+            "Estilo de código (ruff)",
+            False,
+            "ruff no está instalado: pip install -r requirements-dev.txt",
+            obligatorio=False,
+        )
         return
     if arreglar:
-        ejecutar([ruff, "format", "."])
-        ejecutar([ruff, "check", "--fix", "."])
-    chequeo = ejecutar([ruff, "check", "."])
-    formato = ejecutar([ruff, "format", "--check", "."])
+        ejecutar([*ruff, "format", "."])
+        ejecutar([*ruff, "check", "--fix", "."])
+    chequeo = ejecutar([*ruff, "check", "."])
+    formato = ejecutar([*ruff, "format", "--check", "."])
     ok = chequeo.returncode == 0 and formato.returncode == 0
     if ok:
         detalle = ""
@@ -91,7 +96,14 @@ def revisar_arranque() -> None:
         from app import create_app
 
         with tempfile.TemporaryDirectory() as carpeta:
-            app = create_app({"TESTING": True, "DATABASE": str(Path(carpeta) / "verif.db")})
+            # Con el login apagado para poder revisar las páginas (si no, todas redirigen al login)
+            app = create_app(
+                {
+                    "TESTING": True,
+                    "DATABASE": str(Path(carpeta) / "verif.db"),
+                    "LOGIN_OBLIGATORIO": False,
+                }
+            )
             cliente = app.test_client()
             paginas = paginas_del_sistema(app)
             fallidas = [url for url in paginas if cliente.get(url).status_code >= 400]
@@ -123,6 +135,9 @@ def revisar_entrega() -> None:
 
     if shutil.which("git"):
         estado = ejecutar(["git", "status", "--porcelain"])
+        if estado.returncode != 0:
+            registrar("Todo commiteado", False, "no es un repositorio git", obligatorio=False)
+            return
         cambios = [linea for linea in estado.stdout.splitlines() if linea.strip()]
         detalle = f"{len(cambios)} archivos sin commit" if cambios else ""
         registrar("Todo commiteado", not cambios, detalle, obligatorio=False)

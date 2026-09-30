@@ -10,11 +10,13 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
+from app.utils.conversiones import redondear_dinero
+
 Venta = dict[str, Any]
 
 
 def calcular_total(cantidad: int, precio_unitario: float) -> float:
-    return round(cantidad * precio_unitario, 2)
+    return redondear_dinero(cantidad * precio_unitario)
 
 
 def completar_venta(venta: Venta) -> Venta:

@@ -27,8 +27,11 @@ def listado():
     filtros = FiltrosVentas.desde_diccionario(request.args)
     orden = request.args.get("orden", "fecha")
     direccion = request.args.get("direccion", "desc")
-    pagina = max(request.args.get("pagina", 1, type=int), 1)
     por_pagina = current_app.config["REGISTROS_POR_PAGINA"]
+    totales = ventas_repositorio.totales(filtros)
+    paginas = max(math.ceil(totales["ventas"] / por_pagina), 1)
+    # La página pedida se ajusta a las que existen (?pagina=999999 muestra la última)
+    pagina = min(max(request.args.get("pagina", 1, type=int), 1), paginas)
 
     ventas, total = ventas_repositorio.listar_pagina(filtros, orden, direccion, pagina, por_pagina)
     return render_template(
@@ -36,12 +39,12 @@ def listado():
         ventas=ventas,
         total=total,
         pagina=pagina,
-        paginas=max(math.ceil(total / por_pagina), 1),
+        paginas=paginas,
         filtros=filtros,
         orden=orden,
         direccion=direccion,
         categorias=ventas_repositorio.listar_categorias(),
-        totales=ventas_repositorio.totales(filtros),
+        totales=totales,
     )
 
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -20,6 +21,7 @@ from app.utils.conversiones import es_vacio, normalizar_clave
 
 FORMATOS_SOPORTADOS = ("csv", "txt", "json", "xlsx")
 SEPARADORES_POSIBLES = ";,\t|"
+VALORES_DE_MAS = "_valores_de_mas"  # marca de filas con más valores que columnas
 
 
 class ErrorLectura(Exception):
@@ -69,8 +71,14 @@ def descargar(url: str, limite_bytes: int) -> tuple[str, bytes]:
         with urllib.request.urlopen(pedido, timeout=15) as respuesta:
             contenido = respuesta.read(limite_bytes + 1)
             tipo = respuesta.headers.get_content_type()
-    except (OSError, ValueError) as error:  # sin conexión, dirección inválida, error HTTP...
-        raise ErrorLectura(f"No se pudo descargar la dirección: {error}") from None
+    except urllib.error.HTTPError as error:  # el servidor respondió con un error (404, 500...)
+        raise ErrorLectura(
+            f"La dirección respondió con un error ({error.code}). Revisá que esté bien escrita."
+        ) from None
+    except (OSError, ValueError):  # sin conexión, dirección inválida, tiempo agotado...
+        raise ErrorLectura(
+            "No se pudo descargar la dirección. Revisá que esté bien escrita y que haya conexión."
+        ) from None
     if len(contenido) > limite_bytes:
         raise ErrorLectura("Lo descargado es demasiado grande.")
 
@@ -82,7 +90,10 @@ def descargar(url: str, limite_bytes: int) -> tuple[str, bytes]:
 
 
 def decodificar(contenido: bytes) -> str:
-    """Pasa de bytes a texto. Excel en Windows suele guardar los CSV en cp1252, no en UTF-8."""
+    """Pasa de bytes a texto. Excel en Windows suele guardar los CSV en cp1252, no en UTF-8,
+    y la opción "Texto Unicode" de Excel guarda en UTF-16."""
+    if contenido.startswith((b"\xff\xfe", b"\xfe\xff")):
+        return contenido.decode("utf-16")
     for codificacion in ("utf-8-sig", "cp1252"):
         try:
             return contenido.decode(codificacion)
@@ -92,16 +103,29 @@ def decodificar(contenido: bytes) -> str:
 
 
 def detectar_separador(texto: str) -> str:
-    """Elige el separador más frecuente en la primera línea con contenido (';' ',' tab o '|')."""
-    primera_linea = next((linea for linea in texto.splitlines() if linea.strip()), "")
-    conteos = {separador: primera_linea.count(separador) for separador in SEPARADORES_POSIBLES}
-    separador = max(conteos, key=conteos.get)
-    return separador if conteos[separador] > 0 else ","
+    """Elige el separador (';' ',' tab o '|') que más aparece en una línea.
+
+    Se miran las primeras 10 líneas con contenido: así un título como "Ventas, marzo 2026"
+    arriba del encabezado no confunde la detección.
+    """
+    lineas = [linea for linea in texto.splitlines() if linea.strip()][:10]
+    mejor, mayor = ",", 0
+    for separador in SEPARADORES_POSIBLES:
+        cantidad = max((linea.count(separador) for linea in lineas), default=0)
+        if cantidad > mayor:
+            mejor, mayor = separador, cantidad
+    return mejor
 
 
 def leer_csv(texto: str) -> list[FilaLeida]:
     lector = csv.reader(io.StringIO(texto), delimiter=detectar_separador(texto))
-    filas_crudas = [(lector.line_num, valores) for valores in lector]
+    try:
+        filas_crudas = [(lector.line_num, valores) for valores in lector]
+    except csv.Error:
+        raise ErrorLectura(
+            f"El archivo está mal formado cerca de la línea {lector.line_num} "
+            "(¿hay comillas sin cerrar?)."
+        ) from None
     return _filas_con_encabezado(filas_crudas)
 
 
@@ -139,7 +163,8 @@ def leer_json(texto: str) -> list[FilaLeida]:
     for posicion, elemento in enumerate(datos, start=1):
         if not isinstance(elemento, dict):
             raise ErrorLectura(f"El elemento {posicion} del JSON no es un objeto {{...}}.")
-        datos_fila = {normalizar_clave(clave): valor for clave, valor in elemento.items()}
+        claves = _preparar_encabezados(list(elemento.keys()))  # rechaza "Precio" y "precio" juntos
+        datos_fila = dict(zip(claves, elemento.values(), strict=True))
         filas.append(FilaLeida(numero=posicion, datos=datos_fila))
     return filas
 
@@ -216,9 +241,17 @@ def _preparar_encabezados(valores) -> list[str]:
 
 
 def _combinar(encabezados: list[str], valores: list) -> dict[str, Any]:
-    """Une encabezados y valores. Si a la fila le faltan valores, quedan como ''."""
-    return {
+    """Une encabezados y valores. Si a la fila le faltan valores, quedan como ''.
+
+    Si le sobran valores con contenido, se marca con la clave VALORES_DE_MAS para que la
+    validación lo informe (suele ser una coma decimal sin comillas en un CSV separado por comas).
+    """
+    datos = {
         clave: (valores[posicion] if posicion < len(valores) else "")
         for posicion, clave in enumerate(encabezados)
         if clave  # se ignoran columnas sin nombre
     }
+    sobrantes = [valor for valor in valores[len(encabezados) :] if not es_vacio(valor)]
+    if sobrantes:
+        datos[VALORES_DE_MAS] = len(sobrantes)
+    return datos

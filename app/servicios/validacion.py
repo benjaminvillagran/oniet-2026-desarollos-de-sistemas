@@ -11,8 +11,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from app.servicios.lector import FilaLeida
-from app.utils.conversiones import a_decimal, a_entero, a_fecha, es_vacio, normalizar_texto
+from app.servicios.lector import VALORES_DE_MAS, FilaLeida
+from app.utils.conversiones import (
+    a_decimal,
+    a_entero,
+    a_fecha,
+    es_vacio,
+    normalizar_texto,
+    redondear_dinero,
+)
 
 COLUMNAS = [
     {"campo": "fecha", "descripcion": "Fecha de la venta", "ejemplo": "15/03/2026"},
@@ -114,7 +121,7 @@ def validar_venta(datos: dict[str, Any]) -> tuple[dict[str, Any] | None, dict[st
             if precio < 0:
                 errores["precio_unitario"] = "No puede ser negativo."
             else:
-                venta["precio_unitario"] = round(precio, 2)
+                venta["precio_unitario"] = redondear_dinero(precio)
         except ValueError as error:
             errores["precio_unitario"] = str(error)
 
@@ -131,6 +138,15 @@ def validar_filas(filas: list[FilaLeida]) -> ResultadoValidacion:
     """Valida todas las filas: separa las válidas de las que tienen errores."""
     resultado = ResultadoValidacion()
     for fila in filas:
+        if VALORES_DE_MAS in fila.datos:
+            resultado.errores.append(
+                ErrorValidacion(
+                    fila=fila.numero,
+                    campo="fila",
+                    mensaje="Tiene más valores que columnas (¿coma decimal sin comillas?).",
+                )
+            )
+            continue
         venta, errores = validar_venta(fila.datos)
         if errores:
             resultado.errores.extend(

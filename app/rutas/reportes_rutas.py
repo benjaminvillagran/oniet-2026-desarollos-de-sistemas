@@ -23,7 +23,7 @@ def estadisticas():
 @bp.route("/exportar.csv")
 def exportar():
     filtros = FiltrosVentas.desde_diccionario(request.args)
-    contenido = "﻿" + reportes_servicio.exportar_csv(filtros)  # ﻿: Excel detecta UTF-8
+    contenido = "\ufeff" + reportes_servicio.exportar_csv(filtros)  # BOM: Excel detecta UTF-8
     return Response(
         contenido,
         mimetype="text/csv",

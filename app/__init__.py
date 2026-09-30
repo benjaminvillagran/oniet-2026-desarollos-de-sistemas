@@ -11,9 +11,11 @@ El sistema está organizado en capas (cada una tiene una sola responsabilidad):
 
 from __future__ import annotations
 
+import importlib
+import pkgutil
 from pathlib import Path
 
-from flask import Flask, g, render_template
+from flask import Flask, abort, g, render_template, request
 
 from app import db
 from app.config import Config
@@ -30,6 +32,7 @@ def create_app(config: dict | None = None) -> Flask:
 
     db.registrar(app)
     registrar_filtros(app)
+    _proteger_formularios(app)
     _registrar_rutas(app)
     _registrar_paginas_de_error(app)
 
@@ -46,29 +49,42 @@ def create_app(config: dict | None = None) -> Flask:
 
 
 def _registrar_rutas(app: Flask) -> None:
-    from app.rutas import (
-        api_rutas,
-        autenticacion_rutas,
-        importacion_rutas,
-        principal_rutas,
-        reportes_rutas,
-        ventas_rutas,
-    )
+    """Registra solas todas las páginas: cada archivo app/rutas/*_rutas.py con una variable `bp`.
 
-    for modulo in (
-        autenticacion_rutas,
-        principal_rutas,
-        importacion_rutas,
-        ventas_rutas,
-        reportes_rutas,
-        api_rutas,
-    ):
-        app.register_blueprint(modulo.bp)
+    Para agregar páginas nuevas alcanza con crear el archivo `<algo>_rutas.py` con su `bp`.
+    """
+    from app import rutas
+
+    for modulo in sorted(pkgutil.iter_modules(rutas.__path__), key=lambda m: m.name):
+        if modulo.name.endswith("_rutas"):
+            app.register_blueprint(importlib.import_module(f"app.rutas.{modulo.name}").bp)
+
+
+def _proteger_formularios(app: Flask) -> None:
+    """Rechaza formularios enviados desde OTRA página web (protección básica contra CSRF).
+
+    Los navegadores indican en el encabezado "Origin" desde qué sitio se envía un formulario.
+    Si viene de otro sitio (por ejemplo, una página maliciosa abierta en otra pestaña que
+    intenta borrar los datos), el pedido se rechaza.
+    """
+
+    @app.before_request
+    def verificar_origen():
+        if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+            origen = request.headers.get("Origin")
+            if origen and origen.rstrip("/") != request.host_url.rstrip("/"):
+                abort(403)
 
 
 def _registrar_paginas_de_error(app: Flask) -> None:
     def pagina_error(codigo: int, titulo: str, mensaje: str):
         return render_template("error.html", codigo=codigo, titulo=titulo, mensaje=mensaje), codigo
+
+    @app.errorhandler(403)
+    def prohibido(_error):
+        return pagina_error(
+            403, "Pedido rechazado", "El formulario no se envió desde este sistema."
+        )
 
     @app.errorhandler(404)
     def no_encontrado(_error):
