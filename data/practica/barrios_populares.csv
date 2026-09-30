@@ -1,0 +1,28 @@
+id_barrio,nombre_barrio,provincia,localidad,cantidad_familias
+1,San Jorge,Córdoba,Córdoba Capital,378
+2,Nuevo Horizonte,Córdoba,Córdoba Capital,126
+3,Las Flores,Córdoba,Córdoba Capital,31
+4,La Cañada,Córdoba,Córdoba Capital,254
+5,El Mirador,Córdoba,Río Cuarto,23
+6,Santa Rita,Córdoba,Río Cuarto,81
+7,Villa Esperanza,Córdoba,Villa María,317
+8,Nuevo Horizonte,Córdoba,Villa María,292
+9,La Unión,Córdoba,Villa María,198
+10,San Jorge,Mendoza,Mendoza Capital,45
+11,Santa Rita,Mendoza,Mendoza Capital,396
+12,El Mirador,Mendoza,Mendoza Capital,170
+13,Barrio Sol,Mendoza,San Rafael,216
+14,San Jorge,Mendoza,San Rafael,385
+15,Nuevo Horizonte,Mendoza,San Rafael,226
+16,Los Álamos,Mendoza,San Rafael,284
+17,Las Flores,Tucumán,San Miguel de Tucumán,374
+18,Barrio Sol,Tucumán,San Miguel de Tucumán,384
+19,Villa Esperanza,Tucumán,Tafí Viejo,267
+20,San Jorge,Tucumán,Tafí Viejo,95
+21,Barrio Sol,Buenos Aires,La Plata,384
+22,El Progreso,Buenos Aires,La Plata,321
+23,Los Álamos,Buenos Aires,La Plata,138
+24,Las Flores,Buenos Aires,Mar del Plata,62
+25,Barrio Sol,Buenos Aires,Mar del Plata,336
+26,Los Álamos,Buenos Aires,Bahía Blanca,179
+27,Santa Rita,Buenos Aires,Bahía Blanca,313

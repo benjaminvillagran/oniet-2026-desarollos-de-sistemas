@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% from "_macros.html" import kpi, filtros_ventas %}
+{% block titulo %}Estadísticas{% endblock %}
+{% block contenido %}
+{% set resumen = datos.resumen %}
+<section class="encabezado">
+    <div>
+        <h1>Estadísticas</h1>
+        {% if resumen.cantidad_ventas %}
+            <p class="texto-suave">Del {{ resumen.fecha_desde | fecha }} al {{ resumen.fecha_hasta | fecha }}{{ ' (con filtros)' if filtros.activos }}.</p>
+        {% endif %}
+    </div>
+    <div class="acciones">
+        <a class="boton boton--secundario" href="{{ url_for('reportes.exportar', **filtros.como_diccionario()) }}">Exportar CSV</a>
+        <a class="boton boton--secundario" href="{{ url_for('api.estadisticas', **filtros.como_diccionario()) }}">Ver JSON</a>
+    </div>
+</section>
+
+<section class="tarjeta">
+    {{ filtros_ventas(filtros, categorias, url_for('reportes.estadisticas')) }}
+</section>
+
+{% if not resumen.cantidad_ventas %}
+    <div class="tarjeta vacio">
+        <p>No hay ventas {{ 'con esos filtros' if filtros.activos else 'cargadas todavía' }}.</p>
+        <a class="boton" href="{{ url_for('importacion.importar') }}">Importar datos</a>
+    </div>
+{% else %}
+    <section class="grilla-kpi">
+        {{ kpi('Ventas', resumen.cantidad_ventas | numero) }}
+        {{ kpi('Unidades', resumen.unidades | numero) }}
+        {{ kpi('Facturación', resumen.facturacion_total | moneda) }}
+        {{ kpi('Ticket promedio', resumen.ticket_promedio | moneda) }}
+        {{ kpi('Venta más alta', resumen.venta_maxima.total | moneda, resumen.venta_maxima.producto ~ ' · ' ~ (resumen.venta_maxima.fecha | fecha)) }}
+    </section>
+
+    <div class="grilla-2">
+        <section class="tarjeta">
+            <h2>Facturación por categoría</h2>
+            <div class="grafico"><canvas id="grafico-categorias" aria-label="Gráfico de facturación por categoría"></canvas></div>
+            <table class="tabla">
+                <thead><tr><th>Categoría</th><th class="numero">Facturación</th><th class="numero">%</th><th class="columna-barra"></th></tr></thead>
+                <tbody>
+                {% for grupo in datos.por_categoria %}
+                    <tr>
+                        <td>{{ grupo.nombre }}</td>
+                        <td class="numero">{{ grupo.valor | moneda }}</td>
+                        <td class="numero">{{ grupo.porcentaje | porcentaje }}</td>
+                        <td class="columna-barra"><div class="barra"><span style="width: {{ grupo.porcentaje }}%"></span></div></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="tarjeta">
+            <h2>Facturación por mes</h2>
+            <div class="grafico"><canvas id="grafico-meses" aria-label="Gráfico de facturación por mes"></canvas></div>
+            <table class="tabla">
+                <thead><tr><th>Mes</th><th class="numero">Facturación</th></tr></thead>
+                <tbody>
+                {% for fila in datos.por_mes %}
+                    <tr><td>{{ fila.mes | mes }}</td><td class="numero">{{ fila.valor | moneda }}</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <section class="tarjeta">
+        <h2>Top {{ datos.top_productos | length }} productos</h2>
+        <table class="tabla">
+            <thead><tr><th class="numero">#</th><th>Producto</th><th class="numero">Unidades</th><th class="numero">Facturación</th></tr></thead>
+            <tbody>
+            {% for fila in datos.top_productos %}
+                <tr>
+                    <td class="numero">{{ loop.index }}</td>
+                    <td>{{ fila.producto }}</td>
+                    <td class="numero">{{ fila.unidades | numero }}</td>
+                    <td class="numero">{{ fila.facturacion | moneda }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    {# Lista de gráficos: cada uno necesita un <canvas> con el mismo id (ver static/js/graficos.js) #}
+    {% set datos_graficos = [
+        {
+            "id": "grafico-categorias", "tipo": "bar", "titulo": "Facturación", "formato": "moneda",
+            "etiquetas": datos.por_categoria | map(attribute="nombre") | list,
+            "valores": datos.por_categoria | map(attribute="valor") | list
+        },
+        {
+            "id": "grafico-meses", "tipo": "line", "titulo": "Facturación mensual", "formato": "moneda",
+            "etiquetas": datos.por_mes | map(attribute="mes") | map("mes") | list,
+            "valores": datos.por_mes | map(attribute="valor") | list
+        }
+    ] %}
+    <script id="datos-graficos" type="application/json">{{ datos_graficos | tojson }}</script>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if datos.resumen.cantidad_ventas %}
+{# Chart.js 4.4.4 (licencia MIT) incluido en el proyecto: funciona sin internet #}
+<script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='js/graficos.js') }}"></script>
+{% endif %}
+{% endblock %}

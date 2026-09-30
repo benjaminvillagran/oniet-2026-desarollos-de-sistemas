@@ -1,0 +1,64 @@
+# Workflow de verificación: se ejecuta solo en GitHub en cada push.
+# En la pestaña "Actions" del repositorio se ve si todo está bien (verde) o si algo falló (rojo).
+# Revisa lo mismo que  python herramientas/verificar.py  en la compu.
+name: Verificación
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch: # permite ejecutarlo a mano desde la pestaña Actions
+
+permissions:
+  contents: read
+
+concurrency: # si se hacen varios push seguidos, solo se verifica el último
+  group: verificacion-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: ${{ matrix.os }} · Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest # las notebooks del equipo son Windows
+            python-version: "3.13" # la versión recomendada en docs/02
+          - os: ubuntu-latest
+            python-version: "3.10" # por si el laboratorio tiene un Python viejo
+          - os: ubuntu-latest
+            python-version: "3.12"
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Instalar dependencias
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Estilo de código (ruff)
+        run: |
+          ruff check . --output-format=github
+          ruff format --check .
+
+      - name: Tests automáticos (pytest)
+        run: python -m pytest -v
+
+      - name: El sistema arranca y responde
+        run: python herramientas/verificar.py --solo-codigo
+
+      - name: Scripts de Windows (iniciar.bat y verificar.bat)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call iniciar.bat --solo-instalar || exit /b 1
+          call verificar.bat || exit /b 1

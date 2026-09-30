@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}Crear cuenta{% endblock %}
+{% block contenido %}
+<section class="tarjeta formulario-angosto centrado">
+    <h1>Crear cuenta</h1>
+    <form method="post" class="formulario" novalidate>
+        <div class="campo {{ 'campo--error' if errores.nombre_usuario }}">
+            <label for="nombre_usuario">Usuario</label>
+            <input id="nombre_usuario" name="nombre_usuario" value="{{ datos.get('nombre_usuario', '') }}" autocomplete="username" required>
+            {% if errores.nombre_usuario %}<span class="mensaje-error">{{ errores.nombre_usuario }}</span>{% endif %}
+        </div>
+        <div class="campo {{ 'campo--error' if errores.clave }}">
+            <label for="clave">Clave (mínimo 6 caracteres)</label>
+            <input id="clave" name="clave" type="password" autocomplete="new-password" required>
+            {% if errores.clave %}<span class="mensaje-error">{{ errores.clave }}</span>{% endif %}
+        </div>
+        <div class="campo {{ 'campo--error' if errores.confirmacion }}">
+            <label for="confirmacion">Repetir clave</label>
+            <input id="confirmacion" name="confirmacion" type="password" autocomplete="new-password" required>
+            {% if errores.confirmacion %}<span class="mensaje-error">{{ errores.confirmacion }}</span>{% endif %}
+        </div>
+        <button class="boton" type="submit">Crear cuenta</button>
+    </form>
+    <p class="texto-suave">¿Ya tenés cuenta? <a href="{{ url_for('autenticacion.ingresar') }}">Ingresá</a></p>
+</section>
+{% endblock %}

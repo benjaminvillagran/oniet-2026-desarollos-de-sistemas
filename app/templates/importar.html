@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block titulo %}Importar datos{% endblock %}
+{% block contenido %}
+<section class="encabezado">
+    <div>
+        <h1>Importar datos</h1>
+        <p class="texto-suave">Formatos aceptados: {% for formato in formatos %}.{{ formato }}{{ ', ' if not loop.last }}{% endfor %}. Máximo 5 MB.</p>
+    </div>
+</section>
+
+<div class="grilla-2">
+    <section class="tarjeta">
+        <h2>1. Elegí el archivo</h2>
+        <form method="post" enctype="multipart/form-data" class="formulario">
+            <div class="campo">
+                <label for="archivo">Archivo de datos</label>
+                <input id="archivo" name="archivo" type="file" required
+                       accept="{% for formato in formatos %}.{{ formato }}{{ ',' if not loop.last }}{% endfor %}">
+            </div>
+            <label class="casilla"><input type="checkbox" name="forzar" value="1"> Importar aunque ya se haya importado</label>
+            <button class="boton" type="submit">Importar y procesar</button>
+        </form>
+        <h3>O desde una dirección web (API)</h3>
+        <form method="post" class="formulario">
+            <div class="campo">
+                <label for="url">Dirección (URL) que devuelve CSV o JSON</label>
+                <input id="url" name="url" type="url" placeholder="https://ejemplo.com/datos.json" required>
+            </div>
+            <button class="boton boton--secundario" type="submit">Descargar e importar</button>
+        </form>
+        {% if ejemplos %}
+        <h3>¿No tenés un archivo? Probá con uno de ejemplo</h3>
+        <ul class="lista-simple">
+            {% for nombre in ejemplos %}
+                <li><a href="{{ url_for('principal.descargar_ejemplo', nombre=nombre) }}">{{ nombre }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </section>
+
+    <section class="tarjeta">
+        <h2>2. Columnas que tiene que tener</h2>
+        <p class="texto-suave">La primera fila debe tener los nombres de las columnas. No importan mayúsculas ni acentos. En CSV se acepta separador <code>;</code> o <code>,</code>.</p>
+        <table class="tabla">
+            <thead><tr><th>Columna</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+            <tbody>
+            {% for columna in columnas %}
+                <tr>
+                    <td><code>{{ columna.campo }}</code></td>
+                    <td>{{ columna.descripcion }}</td>
+                    <td class="texto-suave">{{ columna.ejemplo }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p class="texto-suave">Las filas con errores no se guardan: se muestra el detalle de cada problema.</p>
+    </section>
+</div>
+{% endblock %}

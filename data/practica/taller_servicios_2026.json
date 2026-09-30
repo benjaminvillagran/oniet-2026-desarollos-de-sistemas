@@ -1,0 +1,122 @@
+﻿[
+  {
+    "NumeroRegistro": "49",
+    "CompaniaSeguro": "Cobertura Total",
+    "Anio": "2026",
+    "Mes": "1",
+    "CantidadServicios": "36",
+    "Region": "NOA",
+    "ValorPorServicio": "75000",
+    "PorcentajeCobertura": "88"
+  },
+  {
+    "NumeroRegistro": "50",
+    "CompaniaSeguro": "Seguros del Plata",
+    "Anio": "2026",
+    "Mes": "1",
+    "CantidadServicios": "3",
+    "Region": "Patagonia",
+    "ValorPorServicio": "75000",
+    "PorcentajeCobertura": "85"
+  },
+  {
+    "NumeroRegistro": "51",
+    "CompaniaSeguro": "Seguros del Plata",
+    "Anio": "2026",
+    "Mes": "2",
+    "CantidadServicios": "30",
+    "Region": "NOA",
+    "ValorPorServicio": "113250",
+    "PorcentajeCobertura": "75"
+  },
+  {
+    "NumeroRegistro": "52",
+    "CompaniaSeguro": "La Protectora",
+    "Anio": "2026",
+    "Mes": "2",
+    "CantidadServicios": "31",
+    "Region": "NOA",
+    "ValorPorServicio": "91500",
+    "PorcentajeCobertura": "75"
+  },
+  {
+    "NumeroRegistro": "53",
+    "CompaniaSeguro": "Aseguradora Andina",
+    "Anio": "2026",
+    "Mes": "3",
+    "CantidadServicios": "37",
+    "Region": "NOA",
+    "ValorPorServicio": "100000",
+    "PorcentajeCobertura": "92"
+  },
+  {
+    "NumeroRegistro": "54",
+    "CompaniaSeguro": "Cobertura Total",
+    "Anio": "2026",
+    "Mes": "3",
+    "CantidadServicios": "21",
+    "Region": "Cuyo",
+    "ValorPorServicio": "100000",
+    "PorcentajeCobertura": "88"
+  },
+  {
+    "NumeroRegistro": "55",
+    "CompaniaSeguro": "Seguros del Plata",
+    "Anio": "2026",
+    "Mes": "4",
+    "CantidadServicios": "39",
+    "Region": "Patagonia",
+    "ValorPorServicio": "100000",
+    "PorcentajeCobertura": "85"
+  },
+  {
+    "NumeroRegistro": "56",
+    "CompaniaSeguro": "Cobertura Total",
+    "Anio": "2026",
+    "Mes": "4",
+    "CantidadServicios": "3",
+    "Region": "Patagonia",
+    "ValorPorServicio": "91500",
+    "PorcentajeCobertura": "93"
+  },
+  {
+    "NumeroRegistro": "57",
+    "CompaniaSeguro": "Seguros del Plata",
+    "Anio": "2026",
+    "Mes": "5",
+    "CantidadServicios": "28",
+    "Region": "NOA",
+    "ValorPorServicio": "75000",
+    "PorcentajeCobertura": "85"
+  },
+  {
+    "NumeroRegistro": "58",
+    "CompaniaSeguro": "Cobertura Total",
+    "Anio": "2026",
+    "Mes": "5",
+    "CantidadServicios": "33",
+    "Region": "NOA",
+    "ValorPorServicio": "82000",
+    "PorcentajeCobertura": "93"
+  },
+  {
+    "NumeroRegistro": "59",
+    "CompaniaSeguro": "Cobertura Total",
+    "Anio": "2026",
+    "Mes": "6",
+    "CantidadServicios": "5",
+    "Region": "Centro",
+    "ValorPorServicio": "75000",
+    "PorcentajeCobertura": "83"
+  },
+  {
+    "NumeroRegistro": "60",
+    "CompaniaSeguro": "La Protectora",
+    "Anio": "2026",
+    "Mes": "6",
+    "CantidadServicios": "35",
+    "Region": "NOA",
+    "ValorPorServicio": "113250",
+    "PorcentajeCobertura": "75"
+  }
+]

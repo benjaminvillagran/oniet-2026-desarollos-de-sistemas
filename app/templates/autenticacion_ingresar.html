@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titulo %}Ingresar{% endblock %}
+{% block contenido %}
+<section class="tarjeta formulario-angosto centrado">
+    <h1>Ingresar</h1>
+    <form method="post" class="formulario">
+        <div class="campo">
+            <label for="nombre_usuario">Usuario</label>
+            <input id="nombre_usuario" name="nombre_usuario" autocomplete="username" required autofocus>
+        </div>
+        <div class="campo">
+            <label for="clave">Clave</label>
+            <input id="clave" name="clave" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="boton" type="submit">Ingresar</button>
+    </form>
+    <p class="texto-suave">¿No tenés cuenta? <a href="{{ url_for('autenticacion.registrarse') }}">Registrate</a></p>
+</section>
+{% endblock %}

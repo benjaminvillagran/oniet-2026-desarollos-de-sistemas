@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% from "_macros.html" import filtros_ventas, encabezado_ordenable, paginacion %}
+{% block titulo %}Ventas{% endblock %}
+{% block contenido %}
+<section class="encabezado">
+    <div>
+        <h1>Ventas</h1>
+        <p class="texto-suave">{{ total | numero }} {{ 'resultado' if total == 1 else 'resultados' }}{{ ' con los filtros aplicados' if filtros.activos }}.</p>
+    </div>
+    <div class="acciones">
+        <a class="boton" href="{{ url_for('ventas.nueva') }}">+ Nueva venta</a>
+        <a class="boton boton--secundario" href="{{ url_for('reportes.exportar', **filtros.como_diccionario()) }}">Exportar CSV</a>
+    </div>
+</section>
+
+<section class="tarjeta">
+    {{ filtros_ventas(filtros, categorias, url_for('ventas.listado')) }}
+</section>
+
+<section class="tarjeta">
+    {% if ventas %}
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    {{ encabezado_ordenable('fecha', 'Fecha', orden, direccion, filtros) }}
+                    {{ encabezado_ordenable('producto', 'Producto', orden, direccion, filtros) }}
+                    {{ encabezado_ordenable('categoria', 'Categoría', orden, direccion, filtros) }}
+                    {{ encabezado_ordenable('cantidad', 'Cantidad', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('precio_unitario', 'Precio unit.', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('total', 'Total', orden, direccion, filtros, 'numero') }}
+                    <th class="sin-imprimir"></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.fecha | fecha }}</td>
+                    <td><a href="{{ url_for('ventas.detalle', venta_id=venta.id) }}">{{ venta.producto }}</a></td>
+                    <td><span class="etiqueta">{{ venta.categoria }}</span></td>
+                    <td class="numero">{{ venta.cantidad | numero }}</td>
+                    <td class="numero">{{ venta.precio_unitario | moneda }}</td>
+                    <td class="numero"><strong>{{ venta.total | moneda }}</strong></td>
+                    <td class="sin-imprimir">
+                        <div class="acciones acciones--fila">
+                            <a class="boton boton--secundario boton--chico" href="{{ url_for('ventas.editar', venta_id=venta.id) }}">Editar</a>
+                            <form method="post" action="{{ url_for('ventas.eliminar', venta_id=venta.id) }}"
+                                  data-confirmar="¿Eliminar la venta de «{{ venta.producto }}»?">
+                                <button class="boton boton--peligro boton--chico" type="submit">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="fila-total">
+                    <td colspan="3">Total{{ ' filtrado' if filtros.activos }} ({{ totales.ventas | numero }} ventas)</td>
+                    <td class="numero">{{ totales.unidades | numero }}</td>
+                    <td></td>
+                    <td class="numero">{{ totales.total | moneda }}</td>
+                    <td class="sin-imprimir"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% set parametros = dict(filtros.como_diccionario(), orden=orden, direccion=direccion) %}
+    {{ paginacion(pagina, paginas, parametros) }}
+    {% else %}
+        <div class="vacio">
+            {% if filtros.activos %}
+                <p>No hay ventas que coincidan con los filtros.</p>
+                <a class="boton boton--secundario" href="{{ url_for('ventas.listado') }}">Limpiar filtros</a>
+            {% else %}
+                <p>Todavía no hay ventas cargadas.</p>
+                <a class="boton" href="{{ url_for('importacion.importar') }}">Importar datos</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+
+{% if total > 0 and not filtros.activos %}
+<section class="zona-peligro">
+    <form method="post" action="{{ url_for('ventas.vaciar') }}"
+          data-confirmar="Se van a borrar TODAS las ventas y el historial. ¿Continuar?">
+        <button class="boton boton--peligro boton--chico" type="submit">Vaciar todos los datos</button>
+    </form>
+</section>
+{% endif %}
+{% endblock %}

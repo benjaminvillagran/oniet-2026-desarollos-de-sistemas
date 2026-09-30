@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %}Historial de importaciones{% endblock %}
+{% block contenido %}
+<section class="encabezado">
+    <div>
+        <h1>Historial de importaciones</h1>
+        <p class="texto-suave">Cada archivo cargado queda registrado con su resultado.</p>
+    </div>
+</section>
+
+<section class="tarjeta">
+    {% if importaciones %}
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th class="numero">#</th><th>Archivo</th><th>Fecha y hora</th>
+                    <th class="numero">Leídas</th><th class="numero">Guardadas</th><th class="numero">Con errores</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in importaciones %}
+                <tr>
+                    <td class="numero">{{ item.id }}</td>
+                    <td>{{ item.nombre_archivo }}</td>
+                    <td>{{ item.fecha_hora | fecha }}</td>
+                    <td class="numero">{{ item.filas_leidas }}</td>
+                    <td class="numero">{{ item.filas_guardadas }}</td>
+                    <td class="numero">
+                        {% if item.filas_con_error %}<span class="etiqueta etiqueta--aviso">{{ item.filas_con_error }}</span>{% else %}0{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="vacio">
+            <p>Todavía no se importó ningún archivo.</p>
+            <a class="boton" href="{{ url_for('importacion.importar') }}">Importar datos</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

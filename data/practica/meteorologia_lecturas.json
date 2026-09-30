@@ -1,0 +1,592 @@
+{
+  "lecturas": [
+    {
+      "fecha_hora": "2026-01-10 00:00",
+      "estacion": "Centro",
+      "temperatura": 29.6,
+      "humedad": 48,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-10 00:00",
+      "estacion": "Norte",
+      "temperatura": 21.4,
+      "humedad": 94,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-10 00:00",
+      "estacion": "Sierras",
+      "temperatura": 20.3,
+      "humedad": 57,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-10 06:00",
+      "estacion": "Centro",
+      "temperatura": 20.2,
+      "humedad": 27,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-10 06:00",
+      "estacion": "Norte",
+      "temperatura": 25.2,
+      "humedad": 86,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-10 06:00",
+      "estacion": "Sierras",
+      "temperatura": 99.9,
+      "humedad": 65,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-10 12:00",
+      "estacion": "Centro",
+      "temperatura": 40.2,
+      "humedad": 36,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-10 12:00",
+      "estacion": "Norte",
+      "temperatura": 31.7,
+      "humedad": 29,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-10 12:00",
+      "estacion": "Sierras",
+      "temperatura": 33.0,
+      "humedad": 90,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-10 18:00",
+      "estacion": "Centro",
+      "temperatura": 30.0,
+      "humedad": 91,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-10 18:00",
+      "estacion": "Norte",
+      "temperatura": 40.1,
+      "humedad": 32,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-10 18:00",
+      "estacion": "Sierras",
+      "temperatura": 32.6,
+      "humedad": 140,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-11 00:00",
+      "estacion": "Centro",
+      "temperatura": 18.9,
+      "humedad": 53,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-11 00:00",
+      "estacion": "Norte",
+      "temperatura": 28.6,
+      "humedad": 44,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-11 00:00",
+      "estacion": "Sierras",
+      "temperatura": 25.6,
+      "humedad": 76,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-11 06:00",
+      "estacion": "Centro",
+      "temperatura": 32.6,
+      "humedad": 54,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-11 06:00",
+      "estacion": "Norte",
+      "temperatura": 33.4,
+      "humedad": 68,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-11 06:00",
+      "estacion": "Sierras",
+      "temperatura": 15.0,
+      "humedad": 70,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-11 12:00",
+      "estacion": "Centro",
+      "temperatura": 35.6,
+      "humedad": 95,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-11 12:00",
+      "estacion": "Norte",
+      "temperatura": 36.1,
+      "humedad": 64,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-11 12:00",
+      "estacion": "Sierras",
+      "temperatura": null,
+      "humedad": 77,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-11 18:00",
+      "estacion": "Centro",
+      "temperatura": 33.3,
+      "humedad": 25,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-11 18:00",
+      "estacion": "Norte",
+      "temperatura": 41.2,
+      "humedad": 91,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-11 18:00",
+      "estacion": "Sierras",
+      "temperatura": 26.1,
+      "humedad": 29,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-12 00:00",
+      "estacion": "Centro",
+      "temperatura": 20.6,
+      "humedad": 63,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-12 00:00",
+      "estacion": "Norte",
+      "temperatura": 29.2,
+      "humedad": 58,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-12 00:00",
+      "estacion": "Sierras",
+      "temperatura": 22.7,
+      "humedad": 37,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-12 06:00",
+      "estacion": "Centro",
+      "temperatura": 26.0,
+      "humedad": 64,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-12 06:00",
+      "estacion": "Norte",
+      "temperatura": 21.7,
+      "humedad": 75,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-12 06:00",
+      "estacion": "Sierras",
+      "temperatura": 20.1,
+      "humedad": 91,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-12 12:00",
+      "estacion": "Centro",
+      "temperatura": 35.7,
+      "humedad": 45,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-12 12:00",
+      "estacion": "Norte",
+      "temperatura": 30.6,
+      "humedad": 43,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-12 12:00",
+      "estacion": "Sierras",
+      "temperatura": 25.8,
+      "humedad": 95,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-12 18:00",
+      "estacion": "Centro",
+      "temperatura": 30.7,
+      "humedad": 49,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-12 18:00",
+      "estacion": "Norte",
+      "temperatura": 42.5,
+      "humedad": 62,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-12 18:00",
+      "estacion": "Sierras",
+      "temperatura": 24.3,
+      "humedad": 42,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 00:00",
+      "estacion": "Centro",
+      "temperatura": 20.8,
+      "humedad": 26,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-13 00:00",
+      "estacion": "Norte",
+      "temperatura": 30.1,
+      "humedad": 86,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 00:00",
+      "estacion": "Sierras",
+      "temperatura": 17.3,
+      "humedad": 93,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 06:00",
+      "estacion": "Centro",
+      "temperatura": 28.8,
+      "humedad": 28,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 06:00",
+      "estacion": "Norte",
+      "temperatura": 25.7,
+      "humedad": 43,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 06:00",
+      "estacion": "Sierras",
+      "temperatura": 12.4,
+      "humedad": 39,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-13 12:00",
+      "estacion": "Centro",
+      "temperatura": 36.0,
+      "humedad": 25,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-13 12:00",
+      "estacion": "Norte",
+      "temperatura": 34.6,
+      "humedad": 72,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 12:00",
+      "estacion": "Sierras",
+      "temperatura": 23.2,
+      "humedad": 44,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-13 18:00",
+      "estacion": "Centro",
+      "temperatura": 35.2,
+      "humedad": 41,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 18:00",
+      "estacion": "Norte",
+      "temperatura": 43.8,
+      "humedad": 87,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-13 18:00",
+      "estacion": "Sierras",
+      "temperatura": 33.1,
+      "humedad": 34,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-14 00:00",
+      "estacion": "Centro",
+      "temperatura": 21.9,
+      "humedad": 63,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-14 00:00",
+      "estacion": "Norte",
+      "temperatura": 22.8,
+      "humedad": 85,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-14 00:00",
+      "estacion": "Sierras",
+      "temperatura": 13.8,
+      "humedad": 91,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-14 06:00",
+      "estacion": "Centro",
+      "temperatura": 30.4,
+      "humedad": 83,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-14 06:00",
+      "estacion": "Norte",
+      "temperatura": 26.2,
+      "humedad": 33,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-14 06:00",
+      "estacion": "Sierras",
+      "temperatura": 26.6,
+      "humedad": 88,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-14 12:00",
+      "estacion": "Centro",
+      "temperatura": 30.7,
+      "humedad": 53,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-14 12:00",
+      "estacion": "Norte",
+      "temperatura": 33.9,
+      "humedad": 89,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-14 12:00",
+      "estacion": "Sierras",
+      "temperatura": 25.0,
+      "humedad": 88,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-14 18:00",
+      "estacion": "Centro",
+      "temperatura": 30.7,
+      "humedad": 50,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-14 18:00",
+      "estacion": "Norte",
+      "temperatura": 35.9,
+      "humedad": 69,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-14 18:00",
+      "estacion": "Sierras",
+      "temperatura": 31.8,
+      "humedad": 77,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-15 00:00",
+      "estacion": "Centro",
+      "temperatura": 30.0,
+      "humedad": 73,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-15 00:00",
+      "estacion": "Norte",
+      "temperatura": 23.3,
+      "humedad": 41,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-15 00:00",
+      "estacion": "Sierras",
+      "temperatura": 16.0,
+      "humedad": 40,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-15 06:00",
+      "estacion": "Centro",
+      "temperatura": 22.0,
+      "humedad": 81,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-15 06:00",
+      "estacion": "Norte",
+      "temperatura": 23.2,
+      "humedad": 59,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-15 06:00",
+      "estacion": "Sierras",
+      "temperatura": 17.0,
+      "humedad": 43,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-15 12:00",
+      "estacion": "Centro",
+      "temperatura": 37.6,
+      "humedad": 59,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-15 12:00",
+      "estacion": "Norte",
+      "temperatura": 37.6,
+      "humedad": 76,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-15 12:00",
+      "estacion": "Sierras",
+      "temperatura": 20.3,
+      "humedad": 67,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-15 18:00",
+      "estacion": "Centro",
+      "temperatura": 32.1,
+      "humedad": 37,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-15 18:00",
+      "estacion": "Norte",
+      "temperatura": 40.5,
+      "humedad": 88,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-15 18:00",
+      "estacion": "Sierras",
+      "temperatura": 32.7,
+      "humedad": 94,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-16 00:00",
+      "estacion": "Centro",
+      "temperatura": 21.1,
+      "humedad": 70,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-16 00:00",
+      "estacion": "Norte",
+      "temperatura": 26.0,
+      "humedad": 76,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-16 00:00",
+      "estacion": "Sierras",
+      "temperatura": 14.6,
+      "humedad": 59,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-16 06:00",
+      "estacion": "Centro",
+      "temperatura": 28.5,
+      "humedad": 41,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-16 06:00",
+      "estacion": "Norte",
+      "temperatura": 29.7,
+      "humedad": 78,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-16 06:00",
+      "estacion": "Sierras",
+      "temperatura": 23.7,
+      "humedad": 85,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-16 12:00",
+      "estacion": "Centro",
+      "temperatura": 39.3,
+      "humedad": 68,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-16 12:00",
+      "estacion": "Norte",
+      "temperatura": 29.6,
+      "humedad": 53,
+      "lluvia_mm": 4.2
+    },
+    {
+      "fecha_hora": "2026-01-16 12:00",
+      "estacion": "Sierras",
+      "temperatura": 21.8,
+      "humedad": 59,
+      "lluvia_mm": 0
+    },
+    {
+      "fecha_hora": "2026-01-16 18:00",
+      "estacion": "Centro",
+      "temperatura": 26.3,
+      "humedad": 51,
+      "lluvia_mm": 12.0
+    },
+    {
+      "fecha_hora": "2026-01-16 18:00",
+      "estacion": "Norte",
+      "temperatura": 35.9,
+      "humedad": 60,
+      "lluvia_mm": 1.5
+    },
+    {
+      "fecha_hora": "2026-01-16 18:00",
+      "estacion": "Sierras",
+      "temperatura": 29.5,
+      "humedad": 35,
+      "lluvia_mm": 1.5
+    }
+  ]
+}
