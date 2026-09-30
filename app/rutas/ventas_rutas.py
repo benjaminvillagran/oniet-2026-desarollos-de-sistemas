@@ -39,6 +39,7 @@ def listado():
         orden=orden,
         direccion=direccion,
         categorias=ventas_repositorio.listar_categorias(),
+        totales=ventas_repositorio.totales(filtros),
     )
 
 

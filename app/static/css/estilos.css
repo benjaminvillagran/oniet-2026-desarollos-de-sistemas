@@ -143,6 +143,7 @@ code { background: #eef2ff; padding: 0.1rem 0.35rem; border-radius: 4px; font-si
 .tabla tbody tr:hover { background: #f8fafc; }
 .tabla .numero { text-align: right; white-space: nowrap; }
 .tabla td form { margin: 0; }
+.fila-total td { font-weight: 700; border-top: 2px solid var(--color-texto-suave); border-bottom: none; }
 .ordenable { color: inherit; text-decoration: none; }
 .ordenable:hover { color: var(--color-primario); }
 .columna-barra { width: 30%; }

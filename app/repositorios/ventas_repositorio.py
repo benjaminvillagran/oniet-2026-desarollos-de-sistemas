@@ -114,6 +114,21 @@ def listar_pagina(
     return [dict(fila) for fila in filas], total
 
 
+def totales(filtros: FiltrosVentas | None = None) -> dict[str, float]:
+    """Cantidad de ventas, unidades y total de las que cumplen los filtros (fila de totales)."""
+    where, parametros = _condiciones(filtros)
+    fila = (
+        obtener_db()
+        .execute(
+            "SELECT COUNT(*) AS ventas, COALESCE(SUM(cantidad), 0) AS unidades, "
+            f"COALESCE(SUM(total), 0) AS total FROM ventas{where}",
+            parametros,
+        )
+        .fetchone()
+    )
+    return dict(fila)
+
+
 def listar_todas(filtros: FiltrosVentas | None = None) -> list[dict[str, Any]]:
     where, parametros = _condiciones(filtros)
     filas = obtener_db().execute(f"SELECT * FROM ventas{where} ORDER BY fecha, id", parametros)

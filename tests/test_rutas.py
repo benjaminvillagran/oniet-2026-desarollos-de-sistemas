@@ -68,6 +68,13 @@ def test_filtros(cliente, importar):
     assert cliente.get("/ventas/?orden=total&direccion=asc&pagina=1").status_code == 200
 
 
+def test_listado_muestra_fila_de_totales_filtrada(cliente, importar):
+    importar(CSV_VALIDO)
+    html = cliente.get("/ventas/?categoria=Kiosco").get_data(as_text=True)
+    assert "Total filtrado (2 ventas)" in html
+    assert "$ 4.800,00" in html  # 3 x 1200 + 1 x 1200
+
+
 def test_exportar_csv_y_volver_a_importar(cliente, importar):
     importar(CSV_VALIDO)
     exportado = cliente.get("/exportar.csv")

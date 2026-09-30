@@ -50,6 +50,15 @@
                 </tr>
             {% endfor %}
             </tbody>
+            <tfoot>
+                <tr class="fila-total">
+                    <td colspan="3">Total{{ ' filtrado' if filtros.activos }} ({{ totales.ventas | numero }} ventas)</td>
+                    <td class="numero">{{ totales.unidades | numero }}</td>
+                    <td></td>
+                    <td class="numero">{{ totales.total | moneda }}</td>
+                    <td class="sin-imprimir"></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
     {% set parametros = dict(filtros.como_diccionario(), orden=orden, direccion=direccion) %}
