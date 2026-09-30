@@ -30,3 +30,6 @@ Thumbs.db
 # Copias de trabajo temporales de agentes de IA
 .claude/worktrees/
 .claude/settings.local.json
+
+# Paquetes descargados para instalar sin internet (pip download)
+wheels/

@@ -55,3 +55,10 @@ jobs:
 
       - name: El sistema arranca y responde
         run: python herramientas/verificar.py --solo-codigo
+
+      - name: Scripts de Windows (iniciar.bat y verificar.bat)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call iniciar.bat --solo-instalar || exit /b 1
+          call verificar.bat || exit /b 1
