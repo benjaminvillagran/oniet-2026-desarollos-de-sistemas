@@ -133,6 +133,27 @@ responde por todo lo que se haga con su cuenta.
    **No gastar el cupo los días anteriores a la competencia**: el semanal no se repone con el de
    5 horas. Anotar qué día se reinicia.
 
+### Prueba: ¿cada IA cargó las reglas del proyecto?
+
+Abrir cada herramienta **en la carpeta del proyecto** y preguntar:
+
+```
+Sin leer archivos nuevos: ¿qué reglas del proyecto tenés cargadas? Resumilas en 5 líneas
+y decime qué comando hay que correr antes de hacer push. ¿Qué skills del proyecto conocés?
+```
+
+La respuesta correcta menciona **Flask + SQLite**, las **capas** (rutas → servicios →
+repositorios), **todo en español** y `python herramientas/verificar.py`, y lista skills como
+`analizar-consigna` y `verificar`. Si la IA no sabe nada de esto:
+
+- **Claude Code** (Pro o Ollama): `/context` tiene que mostrar `CLAUDE.md`. Si no aparece, revisar
+  que la terminal esté en la carpeta del proyecto.
+- **Antigravity**: revisar en *Customizations* que aparezcan la regla `proyecto` y las skills.
+  Mientras tanto, empezar cada chat con "Leé AGENTS.md antes de empezar".
+
+Hacer también una prueba real chica: pedir `/verificar` (o "seguí la skill verificar") y comprobar
+que ejecuta `python herramientas/verificar.py --arreglar` y reporta el resultado.
+
 ## 6. Plan sin internet (pendrive)
 
 Con internet, en la carpeta del proyecto:
