@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections import Counter
 from dataclasses import dataclass, field
 
 from app.db import transaccion
@@ -11,6 +12,8 @@ from app.servicios import lector, procesamiento, validacion
 from app.servicios.lector import ErrorLectura
 from app.servicios.validacion import ErrorValidacion
 from app.utils.formato import formato_fecha
+
+MAXIMO_ERRORES_EN_PANTALLA = 200
 
 
 @dataclass
@@ -24,6 +27,16 @@ class ResumenImportacion:
     @property
     def filas_con_error(self) -> int:
         return len({error.fila for error in self.errores})
+
+    @property
+    def errores_por_campo(self) -> list[tuple[str, int]]:
+        """Resumen: cuántas filas tuvieron error en cada campo, de más a menos."""
+        return Counter(error.campo for error in self.errores).most_common()
+
+    @property
+    def errores_a_mostrar(self) -> list[ErrorValidacion]:
+        """Solo los primeros errores: miles de filas en pantalla colgarían el navegador."""
+        return self.errores[:MAXIMO_ERRORES_EN_PANTALLA]
 
 
 def importar_archivo(

@@ -101,29 +101,36 @@ def detectar_separador(texto: str) -> str:
 
 def leer_csv(texto: str) -> list[FilaLeida]:
     lector = csv.reader(io.StringIO(texto), delimiter=detectar_separador(texto))
-    encabezados: list[str] | None = None
-    filas: list[FilaLeida] = []
-    for valores in lector:
-        if all(es_vacio(valor) for valor in valores):
-            continue  # se ignoran las filas vacías
-        if encabezados is None:
-            encabezados = _preparar_encabezados(valores)
-            continue
-        filas.append(FilaLeida(numero=lector.line_num, datos=_combinar(encabezados, valores)))
-    return filas
+    filas_crudas = [(lector.line_num, valores) for valores in lector]
+    return _filas_con_encabezado(filas_crudas)
 
 
 def leer_json(texto: str) -> list[FilaLeida]:
-    """Acepta una lista de objetos  [{...}, {...}]  o un objeto con una lista  {"ventas": [...]}."""
+    """Acepta los formatos más comunes de archivos y APIs:
+
+    - una lista de objetos:                    [{...}, {...}]
+    - un objeto con una lista (aunque esté anidada): {"ventas": [...]}, {"data": {"items": [...]}}
+    - GeoJSON (datos abiertos con mapas):      se toman las "properties" de cada "feature"
+    """
     try:
         datos = json.loads(texto)
     except json.JSONDecodeError as error:
         raise ErrorLectura(f"El JSON no es válido (línea {error.lineno}): {error.msg}.") from None
 
-    if isinstance(datos, dict):
-        listas = [valor for valor in datos.values() if isinstance(valor, list)]
+    if isinstance(datos, dict) and datos.get("type") == "FeatureCollection":
+        datos = [
+            elemento.get("properties") or {}
+            for elemento in datos.get("features", [])
+            if isinstance(elemento, dict)
+        ]
+    elif isinstance(datos, dict):
+        listas = _listas_de_objetos(datos)
+        if not listas and any(valor == [] for valor in datos.values()):
+            listas = [[]]  # {"ventas": []}: archivo válido pero sin filas
         if len(listas) != 1:
-            raise ErrorLectura("El JSON debe ser una lista de objetos o un objeto con una lista.")
+            raise ErrorLectura(
+                "El JSON debe ser una lista de objetos o tener una sola lista de objetos adentro."
+            )
         datos = listas[0]
     if not isinstance(datos, list):
         raise ErrorLectura("El JSON debe ser una lista de objetos.")
@@ -137,8 +144,19 @@ def leer_json(texto: str) -> list[FilaLeida]:
     return filas
 
 
+def _listas_de_objetos(objeto: dict, profundidad: int = 3) -> list[list]:
+    """Busca listas de objetos dentro de un JSON (hasta 3 niveles de profundidad)."""
+    encontradas = []
+    for valor in objeto.values():
+        if isinstance(valor, list) and valor and all(isinstance(v, dict) for v in valor):
+            encontradas.append(valor)
+        elif isinstance(valor, dict) and profundidad > 1:
+            encontradas.extend(_listas_de_objetos(valor, profundidad - 1))
+    return encontradas
+
+
 def leer_xlsx(contenido: bytes) -> list[FilaLeida]:
-    """Lee la primera hoja del Excel. La primera fila con datos se toma como encabezado."""
+    """Lee la primera hoja del Excel (el encabezado se busca igual que en CSV)."""
     try:
         from openpyxl import load_workbook
     except ImportError:
@@ -150,19 +168,43 @@ def leer_xlsx(contenido: bytes) -> list[FilaLeida]:
     except Exception:  # openpyxl lanza errores distintos según qué esté dañado
         raise ErrorLectura("No se pudo abrir el Excel. ¿Es un archivo .xlsx válido?") from None
 
-    encabezados: list[str] | None = None
-    filas: list[FilaLeida] = []
     try:
-        for numero, valores in enumerate(libro.active.iter_rows(values_only=True), start=1):
-            if all(es_vacio(valor) for valor in valores):
-                continue
-            if encabezados is None:
-                encabezados = _preparar_encabezados(valores)
-                continue
-            filas.append(FilaLeida(numero=numero, datos=_combinar(encabezados, list(valores))))
+        filas_crudas = [
+            (numero, list(valores))
+            for numero, valores in enumerate(libro.active.iter_rows(values_only=True), start=1)
+        ]
     finally:
         libro.close()
-    return filas
+    return _filas_con_encabezado(filas_crudas)
+
+
+def _filas_con_encabezado(filas_crudas: list[tuple[int, list]]) -> list[FilaLeida]:
+    """Busca el encabezado y arma las filas de datos.
+
+    El encabezado es la primera fila con 2 o más valores: así se saltean los títulos que suelen
+    tener los archivos exportados ("Reporte de ventas marzo"). Si ninguna fila tiene 2 valores
+    (archivo de una sola columna), se usa la primera fila con contenido.
+    """
+    con_contenido = [
+        (numero, valores)
+        for numero, valores in filas_crudas
+        if not all(es_vacio(valor) for valor in valores)  # se ignoran las filas vacías
+    ]
+    if not con_contenido:
+        return []
+    posicion_encabezado = next(
+        (
+            posicion
+            for posicion, (_, valores) in enumerate(con_contenido)
+            if sum(not es_vacio(valor) for valor in valores) >= 2
+        ),
+        0,
+    )
+    encabezados = _preparar_encabezados(con_contenido[posicion_encabezado][1])
+    return [
+        FilaLeida(numero=numero, datos=_combinar(encabezados, valores))
+        for numero, valores in con_contenido[posicion_encabezado + 1 :]
+    ]
 
 
 def _preparar_encabezados(valores) -> list[str]:

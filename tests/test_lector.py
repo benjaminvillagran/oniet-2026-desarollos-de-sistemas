@@ -108,3 +108,47 @@ def test_descargar_limita_el_tamanio(monkeypatch):
     )
     with pytest.raises(ErrorLectura, match="demasiado grande"):
         descargar("https://ejemplo.com/datos.csv", 10)
+
+
+def test_saltea_titulos_arriba_del_encabezado_en_csv_y_excel():
+    csv_con_titulo = "Reporte de ventas;;\n;;\nfecha;producto;cantidad\n15/03/2026;Pan;2\n"
+    filas = leer_archivo("reporte.csv", csv_con_titulo.encode())
+    assert filas[0].datos == {"fecha": "15/03/2026", "producto": "Pan", "cantidad": "2"}
+    assert filas[0].numero == 4
+
+    openpyxl = pytest.importorskip("openpyxl")
+    libro = openpyxl.Workbook()
+    for fila in (["Informe mensual"], [], ["fecha", "cantidad"], ["15/03/2026", 2]):
+        libro.active.append(fila)
+    buffer = io.BytesIO()
+    libro.save(buffer)
+    assert leer_archivo("informe.xlsx", buffer.getvalue())[0].datos == {
+        "fecha": "15/03/2026",
+        "cantidad": 2,
+    }
+
+
+def test_archivo_de_una_sola_columna():
+    filas = leer_archivo("nombres.csv", b"nombre\nAna\nBruno\n")
+    assert [fila.datos for fila in filas] == [{"nombre": "Ana"}, {"nombre": "Bruno"}]
+
+
+def test_json_de_api_con_lista_anidada():
+    respuesta = {"estado": "ok", "data": {"total": 2, "items": [{"a": 1}, {"a": 2}]}}
+    assert len(leer_archivo("api.json", json.dumps(respuesta).encode())) == 2
+    ambiguo = {"ventas": [{"a": 1}], "compras": [{"b": 2}]}
+    with pytest.raises(ErrorLectura, match="una sola lista"):
+        leer_archivo("ambiguo.json", json.dumps(ambiguo).encode())
+    with pytest.raises(ErrorLectura, match="no tiene filas"):
+        leer_archivo("vacio.json", b'{"ventas": []}')
+
+
+def test_geojson_de_datos_abiertos():
+    geojson = {
+        "type": "FeatureCollection",
+        "features": [
+            {"type": "Feature", "properties": {"Nombre Barrio": "Las Flores"}, "geometry": None}
+        ],
+    }
+    filas = leer_archivo("barrios.json", json.dumps(geojson).encode())
+    assert filas[0].datos == {"nombre_barrio": "Las Flores"}

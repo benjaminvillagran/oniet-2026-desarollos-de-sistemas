@@ -41,6 +41,15 @@ def test_importar_informa_filas_con_error(importar):
     assert "Debe ser mayor a 0." in html
 
 
+def test_muchos_errores_se_resumen_y_no_cuelgan_la_pagina(importar):
+    filas = "".join(f"99/99/2026;P{i};C;x;1\n" for i in range(1000))
+    respuesta = importar("fecha;producto;categoria;cantidad;precio_unitario\n" + filas)
+    html = respuesta.get_data(as_text=True)
+    assert "Resumen por campo" in html
+    assert "errores más que no se muestran" in html
+    assert len(respuesta.data) < 200_000
+
+
 def test_importar_archivo_sin_columnas_obligatorias(importar):
     html = importar("fecha,producto\n15/03/2026,Pan\n").get_data(as_text=True)
     assert "Faltan columnas obligatorias" in html

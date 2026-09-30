@@ -24,11 +24,23 @@
 <section class="tarjeta">
     <h2>Detalle de errores</h2>
     <p class="texto-suave">Estas filas no se guardaron. Corregilas en el archivo y volvé a importarlo.</p>
+    {% if resumen.errores_por_campo | length > 1 or resumen.errores | length > resumen.errores_a_mostrar | length %}
+    <h3>Resumen por campo</h3>
+    <table class="tabla">
+        <thead><tr><th>Campo</th><th class="numero">Errores</th></tr></thead>
+        <tbody>
+        {% for campo, cantidad in resumen.errores_por_campo %}
+            <tr><td><code>{{ campo }}</code></td><td class="numero">{{ cantidad | numero }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h3>Primeros errores</h3>
+    {% endif %}
     <div class="tabla-contenedor">
         <table class="tabla">
             <thead><tr><th class="numero">Fila</th><th>Campo</th><th>Problema</th></tr></thead>
             <tbody>
-            {% for error in resumen.errores %}
+            {% for error in resumen.errores_a_mostrar %}
                 <tr>
                     <td class="numero">{{ error.fila }}</td>
                     <td><code>{{ error.campo }}</code></td>
@@ -38,6 +50,10 @@
             </tbody>
         </table>
     </div>
+    {% set ocultos = resumen.errores | length - resumen.errores_a_mostrar | length %}
+    {% if ocultos > 0 %}
+        <p class="texto-suave">Y {{ ocultos | numero }} errores más que no se muestran.</p>
+    {% endif %}
 </section>
 {% else %}
 <div class="alerta alerta--exito">Todas las filas eran válidas y se guardaron.</div>
