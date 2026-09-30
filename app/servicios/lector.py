@@ -1,4 +1,4 @@
-"""PASO 1 - LECTURA de archivos de datos: CSV, TXT, JSON y Excel (.xlsx).
+"""PASO 1 - LECTURA de archivos de datos: CSV, TXT, JSON y Excel (.xlsx), o desde una URL/API.
 
 Sin importar el formato, siempre devuelve lo mismo: una lista de FilaLeida.
 Así el resto del sistema no necesita saber de qué tipo de archivo vinieron los datos.
@@ -10,6 +10,8 @@ from __future__ import annotations
 import csv
 import io
 import json
+import urllib.parse
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -52,6 +54,31 @@ def leer_archivo(nombre_archivo: str, contenido: bytes) -> list[FilaLeida]:
     if not filas:
         raise ErrorLectura("El archivo no tiene filas con datos (solo encabezados).")
     return filas
+
+
+def descargar(url: str, limite_bytes: int) -> tuple[str, bytes]:
+    """Descarga datos de una dirección web o API (http/https). Devuelve (nombre, contenido).
+
+    Si la dirección no termina en .csv/.json/..., el formato se deduce del tipo de contenido.
+    """
+    url = url.strip()
+    if not url.lower().startswith(("http://", "https://")):
+        raise ErrorLectura("La dirección tiene que empezar con http:// o https://.")
+    try:
+        pedido = urllib.request.Request(url, headers={"User-Agent": "sistema-oniet/1.0"})
+        with urllib.request.urlopen(pedido, timeout=15) as respuesta:
+            contenido = respuesta.read(limite_bytes + 1)
+            tipo = respuesta.headers.get_content_type()
+    except (OSError, ValueError) as error:  # sin conexión, dirección inválida, error HTTP...
+        raise ErrorLectura(f"No se pudo descargar la dirección: {error}") from None
+    if len(contenido) > limite_bytes:
+        raise ErrorLectura("Lo descargado es demasiado grande.")
+
+    nombre = Path(urllib.parse.urlparse(url).path).name or "datos"
+    if extension_de(nombre) not in FORMATOS_SOPORTADOS:
+        parece_json = "json" in tipo or contenido.lstrip()[:1] in (b"[", b"{")
+        nombre = f"{nombre}.{'json' if parece_json else 'csv'}"
+    return nombre, contenido
 
 
 def decodificar(contenido: bytes) -> str:

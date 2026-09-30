@@ -26,3 +26,12 @@ CREATE TABLE IF NOT EXISTS ventas (
 
 CREATE INDEX IF NOT EXISTS idx_ventas_fecha ON ventas (fecha);
 CREATE INDEX IF NOT EXISTS idx_ventas_categoria ON ventas (categoria);
+
+-- Usuarios: solo se usan si la consigna pide login (LOGIN_OBLIGATORIO = True en config.py)
+CREATE TABLE IF NOT EXISTS usuarios (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre_usuario TEXT    NOT NULL UNIQUE,
+    clave_hash     TEXT    NOT NULL,                        -- nunca se guarda la clave real
+    creado         TEXT    NOT NULL,
+    ultimo_acceso  TEXT
+);

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block titulo %}Mi cuenta{% endblock %}
+{% block contenido %}
+<section class="encabezado">
+    <div>
+        <h1>Mi cuenta</h1>
+        <p class="texto-suave">Usuario: <strong>{{ usuario_actual.nombre_usuario }}</strong></p>
+    </div>
+</section>
+
+<div class="grilla-2">
+    <section class="tarjeta">
+        <h2>Datos</h2>
+        <dl class="ficha">
+            <dt>Usuario</dt><dd>{{ usuario_actual.nombre_usuario }}</dd>
+            <dt>Cuenta creada</dt><dd>{{ usuario_actual.creado | fecha }}</dd>
+            <dt>Último acceso</dt><dd>{{ usuario_actual.ultimo_acceso | fecha }}</dd>
+        </dl>
+    </section>
+
+    <section class="tarjeta">
+        <h2>Cambiar clave</h2>
+        <form method="post" class="formulario" novalidate>
+            {% for campo, etiqueta, autocompletar in [
+                ('clave_actual', 'Clave actual', 'current-password'),
+                ('clave', 'Clave nueva (mínimo 6 caracteres)', 'new-password'),
+                ('confirmacion', 'Repetir clave nueva', 'new-password')] %}
+            <div class="campo {{ 'campo--error' if errores[campo] }}">
+                <label for="{{ campo }}">{{ etiqueta }}</label>
+                <input id="{{ campo }}" name="{{ campo }}" type="password" autocomplete="{{ autocompletar }}" required>
+                {% if errores[campo] %}<span class="mensaje-error">{{ errores[campo] }}</span>{% endif %}
+            </div>
+            {% endfor %}
+            <button class="boton" type="submit">Cambiar clave</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

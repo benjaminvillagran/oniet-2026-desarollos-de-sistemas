@@ -36,16 +36,19 @@
             {% for venta in ventas %}
                 <tr>
                     <td>{{ venta.fecha | fecha }}</td>
-                    <td>{{ venta.producto }}</td>
+                    <td><a href="{{ url_for('ventas.detalle', venta_id=venta.id) }}">{{ venta.producto }}</a></td>
                     <td><span class="etiqueta">{{ venta.categoria }}</span></td>
                     <td class="numero">{{ venta.cantidad | numero }}</td>
                     <td class="numero">{{ venta.precio_unitario | moneda }}</td>
                     <td class="numero"><strong>{{ venta.total | moneda }}</strong></td>
                     <td class="sin-imprimir">
-                        <form method="post" action="{{ url_for('ventas.eliminar', venta_id=venta.id) }}"
-                              data-confirmar="¿Eliminar la venta de «{{ venta.producto }}»?">
-                            <button class="boton boton--peligro boton--chico" type="submit">Eliminar</button>
-                        </form>
+                        <div class="acciones acciones--fila">
+                            <a class="boton boton--secundario boton--chico" href="{{ url_for('ventas.editar', venta_id=venta.id) }}">Editar</a>
+                            <form method="post" action="{{ url_for('ventas.eliminar', venta_id=venta.id) }}"
+                                  data-confirmar="¿Eliminar la venta de «{{ venta.producto }}»?">
+                                <button class="boton boton--peligro boton--chico" type="submit">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             {% endfor %}

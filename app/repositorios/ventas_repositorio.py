@@ -145,6 +145,26 @@ def listar_categorias() -> list[str]:
     return [fila["categoria"] for fila in filas]
 
 
+def actualizar(venta_id: int, venta: dict[str, Any]) -> bool:
+    cursor = obtener_db().execute(
+        """
+        UPDATE ventas
+        SET fecha = ?, producto = ?, categoria = ?, cantidad = ?, precio_unitario = ?, total = ?
+        WHERE id = ?
+        """,
+        (
+            venta["fecha"],
+            venta["producto"],
+            venta["categoria"],
+            venta["cantidad"],
+            venta["precio_unitario"],
+            venta["total"],
+            venta_id,
+        ),
+    )
+    return cursor.rowcount > 0
+
+
 def eliminar(venta_id: int) -> bool:
     cursor = obtener_db().execute("DELETE FROM ventas WHERE id = ?", (venta_id,))
     return cursor.rowcount > 0

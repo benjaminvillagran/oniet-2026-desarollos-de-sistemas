@@ -19,6 +19,16 @@ def crear_venta(datos: dict[str, Any]) -> tuple[int | None, dict[str, str]]:
     return nuevo_id, {}
 
 
+def editar_venta(venta_id: int, datos: dict[str, Any]) -> dict[str, str]:
+    """Valida y actualiza una venta existente. Devuelve los errores (vacío si salió bien)."""
+    venta, errores = validacion.validar_venta(datos)
+    if errores:
+        return errores
+    with transaccion():
+        ventas_repositorio.actualizar(venta_id, procesamiento.completar_venta(venta))
+    return {}
+
+
 def eliminar_venta(venta_id: int) -> bool:
     with transaccion():
         return ventas_repositorio.eliminar(venta_id)

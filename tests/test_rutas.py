@@ -49,6 +49,16 @@ def test_importar_sin_elegir_archivo(cliente):
     assert "Elegí un archivo" in respuesta.get_data(as_text=True)
 
 
+def test_importar_desde_url(cliente, monkeypatch):
+    from app.servicios import lector
+
+    monkeypatch.setattr(
+        lector, "descargar", lambda url, limite: ("ventas.csv", CSV_VALIDO.encode("utf-8"))
+    )
+    respuesta = cliente.post("/importar/", data={"url": "https://ejemplo.com/api/ventas"})
+    assert "Se guardaron 3 de 3 filas" in respuesta.get_data(as_text=True)
+
+
 def test_estadisticas_calculadas_sobre_lo_importado(cliente, importar):
     importar(CSV_VALIDO)
     datos = cliente.get("/api/estadisticas").get_json()
@@ -115,3 +125,23 @@ def test_descargar_ejemplo(cliente):
     respuesta = cliente.get("/ejemplos/ventas_ejemplo.csv")
     assert respuesta.status_code == 200
     assert cliente.get("/ejemplos/../../run.py").status_code == 404
+
+
+def test_detalle_y_edicion(cliente, importar):
+    importar(CSV_VALIDO)
+    venta = cliente.get("/api/ventas").get_json()[0]
+    detalle = cliente.get(f"/ventas/{venta['id']}").get_data(as_text=True)
+    assert venta["producto"] in detalle and "Importación #1" in detalle
+    assert "Editar venta" in cliente.get(f"/ventas/{venta['id']}/editar").get_data(as_text=True)
+
+    invalida = cliente.post(f"/ventas/{venta['id']}/editar", data={**venta, "cantidad": "0"})
+    assert "Debe ser mayor a 0." in invalida.get_data(as_text=True)
+
+    datos = {**venta, "cantidad": "10", "precio_unitario": "100"}
+    respuesta = cliente.post(f"/ventas/{venta['id']}/editar", data=datos, follow_redirects=True)
+    assert "Venta actualizada" in respuesta.get_data(as_text=True)
+    actualizada = cliente.get(f"/api/ventas/{venta['id']}").get_json()
+    assert (actualizada["cantidad"], actualizada["total"]) == (10, 1000)  # se recalcula el total
+
+    assert cliente.get("/ventas/999").status_code == 404
+    assert cliente.get("/ventas/999/editar").status_code == 404

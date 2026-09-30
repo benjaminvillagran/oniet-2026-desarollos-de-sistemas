@@ -60,3 +60,9 @@ def importar_archivo(nombre_archivo: str, contenido: bytes) -> ResumenImportacio
         errores=resultado.errores,
         importacion_id=importacion_id,
     )
+
+
+def importar_desde_url(url: str, limite_bytes: int) -> ResumenImportacion:
+    """Descarga los datos de una URL o API y los importa igual que un archivo."""
+    nombre, contenido = lector.descargar(url, limite_bytes)
+    return importar_archivo(nombre, contenido)

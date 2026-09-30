@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flask import Flask, render_template
+from flask import Flask, g, render_template
 
 from app import db
 from app.config import Config
@@ -38,6 +38,8 @@ def create_app(config: dict | None = None) -> Flask:
         return {
             "nombre_sistema": app.config["NOMBRE_SISTEMA"],
             "nombre_equipo": app.config["NOMBRE_EQUIPO"],
+            "login_activo": app.config["LOGIN_OBLIGATORIO"],
+            "usuario_actual": g.get("usuario"),
         }
 
     return app
@@ -46,13 +48,21 @@ def create_app(config: dict | None = None) -> Flask:
 def _registrar_rutas(app: Flask) -> None:
     from app.rutas import (
         api_rutas,
+        autenticacion_rutas,
         importacion_rutas,
         principal_rutas,
         reportes_rutas,
         ventas_rutas,
     )
 
-    for modulo in (principal_rutas, importacion_rutas, ventas_rutas, reportes_rutas, api_rutas):
+    for modulo in (
+        autenticacion_rutas,
+        principal_rutas,
+        importacion_rutas,
+        ventas_rutas,
+        reportes_rutas,
+        api_rutas,
+    ):
         app.register_blueprint(modulo.bp)
 
 

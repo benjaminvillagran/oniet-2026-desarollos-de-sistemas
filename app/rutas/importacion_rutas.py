@@ -17,14 +17,20 @@ def _archivos_de_ejemplo() -> list[str]:
 @bp.route("/", methods=["GET", "POST"])
 def importar():
     if request.method == "POST":
+        url = request.form.get("url", "").strip()
         archivo = request.files.get("archivo")
-        if archivo is None or archivo.filename == "":
-            flash("Elegí un archivo para importar.", "error")
+        if not url and (archivo is None or archivo.filename == ""):
+            flash("Elegí un archivo o escribí una dirección web para importar.", "error")
             return redirect(url_for(".importar"))
+        origen = url or archivo.filename
         try:
-            resumen = importacion_servicio.importar_archivo(archivo.filename, archivo.read())
+            if url:
+                limite = current_app.config["MAX_CONTENT_LENGTH"]
+                resumen = importacion_servicio.importar_desde_url(url, limite)
+            else:
+                resumen = importacion_servicio.importar_archivo(archivo.filename, archivo.read())
         except ErrorLectura as error:
-            flash(f"No se pudo importar «{archivo.filename}»: {error}", "error")
+            flash(f"No se pudo importar «{origen}»: {error}", "error")
             return redirect(url_for(".importar"))
 
         categoria = "exito" if not resumen.errores else "aviso"

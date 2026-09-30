@@ -1,4 +1,6 @@
-"""Listado, alta manual y baja de ventas."""
+"""Listado, detalle, alta, edición y baja de ventas."""
+
+from __future__ import annotations
 
 import math
 
@@ -54,8 +56,39 @@ def nueva():
             flash("Venta registrada correctamente.", "exito")
             return redirect(url_for(".listado"))
         flash("Revisá los campos marcados en rojo.", "error")
+    return _mostrar_formulario("Nueva venta", datos, errores)
+
+
+@bp.route("/<int:venta_id>")
+def detalle(venta_id: int):
+    venta = ventas_repositorio.obtener_por_id(venta_id)
+    if venta is None:
+        abort(404)
+    return render_template("ventas_detalle.html", venta=venta)
+
+
+@bp.route("/<int:venta_id>/editar", methods=["GET", "POST"])
+def editar(venta_id: int):
+    venta = ventas_repositorio.obtener_por_id(venta_id)
+    if venta is None:
+        abort(404)
+    datos: dict = venta
+    errores: dict = {}
+    if request.method == "POST":
+        datos = request.form.to_dict()
+        errores = ventas_servicio.editar_venta(venta_id, datos)
+        if not errores:
+            flash("Venta actualizada correctamente.", "exito")
+            return redirect(url_for(".detalle", venta_id=venta_id))
+        flash("Revisá los campos marcados en rojo.", "error")
+    return _mostrar_formulario("Editar venta", datos, errores, venta_id)
+
+
+def _mostrar_formulario(titulo: str, datos: dict, errores: dict, venta_id: int | None = None):
     return render_template(
         "ventas_formulario.html",
+        titulo=titulo,
+        venta_id=venta_id,
         datos=datos,
         errores=errores,
         columnas=validacion.COLUMNAS,

@@ -19,6 +19,14 @@
             </div>
             <button class="boton" type="submit">Importar y procesar</button>
         </form>
+        <h3>O desde una dirección web (API)</h3>
+        <form method="post" class="formulario">
+            <div class="campo">
+                <label for="url">Dirección (URL) que devuelve CSV o JSON</label>
+                <input id="url" name="url" type="url" placeholder="https://ejemplo.com/datos.json" required>
+            </div>
+            <button class="boton boton--secundario" type="submit">Descargar e importar</button>
+        </form>
         {% if ejemplos %}
         <h3>¿No tenés un archivo? Probá con uno de ejemplo</h3>
         <ul class="lista-simple">

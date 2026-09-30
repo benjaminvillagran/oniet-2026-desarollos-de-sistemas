@@ -1,9 +1,11 @@
+import email.message
 import io
 import json
+import urllib.request
 
 import pytest
 
-from app.servicios.lector import ErrorLectura, detectar_separador, leer_archivo
+from app.servicios.lector import ErrorLectura, descargar, detectar_separador, leer_archivo
 
 
 def test_lee_csv_con_punto_y_coma_y_normaliza_encabezados():
@@ -71,3 +73,38 @@ def test_lee_excel():
 def test_errores_de_lectura(nombre, contenido, mensaje):
     with pytest.raises(ErrorLectura, match=mensaje):
         leer_archivo(nombre, contenido)
+
+
+class RespuestaFalsa(io.BytesIO):
+    """Imita la respuesta de urllib para probar descargas sin internet."""
+
+    def __init__(self, contenido: bytes, tipo: str):
+        super().__init__(contenido)
+        self.headers = email.message.Message()
+        self.headers["Content-Type"] = tipo
+
+
+def test_descargar_desde_una_api(monkeypatch):
+    datos = b'[{"producto": "Agua"}]'
+    monkeypatch.setattr(
+        urllib.request, "urlopen", lambda pedido, timeout: RespuestaFalsa(datos, "application/json")
+    )
+    nombre, contenido = descargar("https://api.ejemplo.com/ventas?anio=2026", 1000)
+    assert (nombre, contenido) == ("ventas.json", datos)
+
+
+@pytest.mark.parametrize(
+    ("url", "mensaje"),
+    [("ftp://servidor/datos.csv", "http"), ("archivo.csv", "http"), ("http://[::1", "descargar")],
+)
+def test_descargar_rechaza_direcciones_invalidas(url, mensaje):
+    with pytest.raises(ErrorLectura, match=mensaje):
+        descargar(url, 1000)
+
+
+def test_descargar_limita_el_tamanio(monkeypatch):
+    monkeypatch.setattr(
+        urllib.request, "urlopen", lambda pedido, timeout: RespuestaFalsa(b"x" * 50, "text/csv")
+    )
+    with pytest.raises(ErrorLectura, match="demasiado grande"):
+        descargar("https://ejemplo.com/datos.csv", 10)

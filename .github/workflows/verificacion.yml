@@ -33,10 +33,10 @@ jobs:
 
     steps:
       - name: Descargar el código
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Instalar Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip

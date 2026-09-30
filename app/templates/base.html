@@ -18,6 +18,14 @@
                 <a href="{{ url_for('ventas.nueva') }}" class="{{ 'activo' if seccion == 'ventas.nueva' }}">Nueva venta</a>
                 <a href="{{ url_for('reportes.estadisticas') }}" class="{{ 'activo' if seccion == 'reportes.estadisticas' }}">Estadísticas</a>
                 <a href="{{ url_for('importacion.historial') }}" class="{{ 'activo' if seccion == 'importacion.historial' }}">Historial</a>
+                {% if usuario_actual %}
+                    <a href="{{ url_for('autenticacion.cuenta') }}" class="{{ 'activo' if seccion == 'autenticacion.cuenta' }}">👤 {{ usuario_actual.nombre_usuario }}</a>
+                    <form method="post" action="{{ url_for('autenticacion.salir') }}" class="menu__formulario">
+                        <button type="submit">Salir</button>
+                    </form>
+                {% elif login_activo %}
+                    <a href="{{ url_for('autenticacion.ingresar') }}" class="{{ 'activo' if seccion == 'autenticacion.ingresar' }}">Ingresar</a>
+                {% endif %}
             </nav>
         </div>
     </header>
