@@ -155,6 +155,7 @@ sin login porque `tests/conftest.py` lo apaga; el login se prueba con la fixture
 |---|---|---|
 | `no such column` / `no such table` | La base tiene el esquema viejo | Reiniciar la base |
 | "Faltan columnas obligatorias" al importar | Encabezados del archivo distintos a `COLUMNAS` | Agregar el nombre a `ALIAS` |
-| Números mal leídos (1.500 → 1,5) | Formato con punto de miles sin coma decimal | Revisar el archivo; ajustar `a_decimal` y agregar un test |
+| Números mal leídos | `a_decimal` sigue el formato argentino (`1.500` = 1500, `1,5` = 1,5) | Si el archivo usa punto decimal con 3 decimales (`2.675` = 2,675), ajustar `a_decimal` y agregar un test |
 | `BuildError` en una plantilla | `url_for` con un nombre de ruta que ya no existe | Buscar el nombre viejo en `templates/` |
 | La página muestra datos viejos | Faltó reiniciar el servidor | Cortar con Ctrl+C y volver a correr `python run.py` |
+| Un campo que se importa no debe cargarse a mano (ej.: un id que viene del archivo) | El formulario de alta usa `COLUMNAS` | Sacar ese campo del formulario (`ventas_formulario.html`) y completarlo en el servicio |

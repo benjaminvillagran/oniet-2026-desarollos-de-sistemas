@@ -77,6 +77,13 @@ mensajería del Sistema ONIET u oniet@ubp.edu.ar. Borrador:
 
 ## 5. Herramientas de IA
 
+**Edad mínima (verificada en los términos oficiales el 30/09/2026): 18 años** para Claude
+(claude.ai y Claude Code), Ollama y Antigravity. El equipo cumple (los 3 tienen 18).
+
+**Reserva opcional:** como son estudiantes secundarios, cada uno puede pedir **GitHub Education**
+(docs.github.com, "Apply to GitHub Education as a student") y usar **GitHub Copilot Student**
+gratis en VS Code. La aprobación puede tardar días: pedirlo ya si lo quieren tener.
+
 Cada persona usa **su propia cuenta**. No se comparten cuentas ni claves: los términos de
 Anthropic no lo permiten y las preguntas frecuentes de Ollama (ollama.com/pricing) indican "una
 cuenta por persona". La persona A además

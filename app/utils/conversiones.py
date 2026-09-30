@@ -97,7 +97,8 @@ def redondear_dinero(valor: float) -> float:
 
 
 def a_fecha(valor) -> date:
-    """Convierte a fecha. Acepta DD/MM/AAAA, AAAA-MM-DD, DD-MM-AAAA y fechas de Excel."""
+    """Convierte a fecha. Acepta DD/MM/AAAA, AAAA-MM-DD, DD-MM-AAAA y celdas de Excel con formato
+    fecha. Un número de serie de Excel (ej.: 45000) no se acepta: guardar la columna como fecha."""
     if isinstance(valor, datetime):
         return valor.date()
     if isinstance(valor, date):

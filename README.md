@@ -38,6 +38,7 @@ resultados** en 2 h 30 min, con ayuda de IA):
 | 7 | [Práctica](docs/07_PRACTICA.md) | 5 simulacros (2 al estilo de consignas reales) | Todos |
 | 8 | [Defensa ante el jurado](docs/08_DEFENSA_JURADO.md) | Demo de 3 minutos y preguntas probables | Todos |
 | 9 | [Problemas comunes](docs/09_PROBLEMAS_COMUNES.md) | Síntoma → solución | Todos |
+| 10 | [Verificación de fuentes](docs/10_VERIFICACION_FUENTES.md) | Cada dato de las guías comprobado en la fuente oficial, con cita | Consulta |
 
 Plantillas para el día: [análisis de la consigna](docs/plantillas/ANALISIS_CONSIGNA.md),
 [README de entrega](docs/plantillas/README_ENTREGA.md),
