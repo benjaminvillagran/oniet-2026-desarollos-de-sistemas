@@ -95,3 +95,25 @@ def test_rutas_mencionadas_en_agents_md_existen():
     rutas = set(re.findall(r"`((?:app|tests|herramientas|data|docs)/[\w./-]+)`", texto))
     faltantes = sorted(ruta for ruta in rutas if "*" not in ruta and not (RAIZ / ruta).exists())
     assert not faltantes, f"AGENTS.md menciona rutas que no existen: {faltantes}"
+
+
+DOCUMENTOS = [RAIZ / "README.md", RAIZ / "AGENTS.md", *sorted((RAIZ / "docs").rglob("*.md"))]
+
+
+@pytest.mark.parametrize("documento", DOCUMENTOS, ids=lambda documento: documento.name)
+def test_links_y_rutas_de_la_documentacion_existen(documento):
+    """Los links [texto](ruta) y las rutas `docs/...` citadas apuntan a archivos que existen."""
+    texto = documento.read_text(encoding="utf-8")
+    faltantes = []
+    for destino in re.findall(r"\]\(([^)#\s]+)\)", texto):
+        if not destino.startswith(("http://", "https://", "mailto:")):
+            if not (documento.parent / destino).exists():
+                faltantes.append(destino)
+    for ruta in re.findall(r"`(docs/[\w./-]+\.md)`", texto):
+        if not (RAIZ / ruta).exists() and ruta not in (
+            "docs/ANALISIS.md",
+            "docs/USO_IA.md",
+            "docs/CONSIGNA.md",
+        ):
+            faltantes.append(ruta)
+    assert not faltantes, f"{documento.name} apunta a archivos que no existen: {faltantes}"
