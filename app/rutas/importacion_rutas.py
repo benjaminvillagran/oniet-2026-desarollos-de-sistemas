@@ -11,7 +11,13 @@ bp = Blueprint("importacion", __name__, url_prefix="/importar")
 
 def _archivos_de_ejemplo() -> list[str]:
     carpeta = current_app.config["CARPETA_EJEMPLOS"]
-    return sorted(archivo.name for archivo in carpeta.iterdir() if archivo.is_file())
+    if not carpeta.is_dir():
+        return []
+    return sorted(
+        archivo.name
+        for archivo in carpeta.iterdir()
+        if archivo.is_file() and not archivo.name.startswith(".")
+    )
 
 
 @bp.route("/", methods=["GET", "POST"])
@@ -23,12 +29,15 @@ def importar():
             flash("Elegí un archivo o escribí una dirección web para importar.", "error")
             return redirect(url_for(".importar"))
         origen = url or archivo.filename
+        forzar = request.form.get("forzar") == "1"
         try:
             if url:
                 limite = current_app.config["MAX_CONTENT_LENGTH"]
-                resumen = importacion_servicio.importar_desde_url(url, limite)
+                resumen = importacion_servicio.importar_desde_url(url, limite, forzar)
             else:
-                resumen = importacion_servicio.importar_archivo(archivo.filename, archivo.read())
+                resumen = importacion_servicio.importar_archivo(
+                    archivo.filename, archivo.read(), forzar
+                )
         except ErrorLectura as error:
             flash(f"No se pudo importar «{origen}»: {error}", "error")
             return redirect(url_for(".importar"))

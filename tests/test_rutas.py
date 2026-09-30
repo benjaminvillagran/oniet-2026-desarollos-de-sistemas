@@ -1,5 +1,7 @@
 """Pruebas de punta a punta: se usa el sistema como lo usaría una persona desde el navegador."""
 
+import io
+
 from tests.conftest import CSV_VALIDO
 
 
@@ -42,6 +44,21 @@ def test_importar_informa_filas_con_error(importar):
 def test_importar_archivo_sin_columnas_obligatorias(importar):
     html = importar("fecha,producto\n15/03/2026,Pan\n").get_data(as_text=True)
     assert "Faltan columnas obligatorias" in html
+
+
+def test_importar_dos_veces_el_mismo_archivo_no_duplica(cliente, importar):
+    importar(CSV_VALIDO)
+    html = importar(CSV_VALIDO).get_data(as_text=True)
+    assert "ya se importó" in html
+    assert len(cliente.get("/api/ventas").get_json()) == 3
+
+    respuesta = cliente.post(
+        "/importar/",
+        data={"archivo": (io.BytesIO(CSV_VALIDO.encode()), "ventas.csv"), "forzar": "1"},
+        content_type="multipart/form-data",
+    )
+    assert "Se guardaron 3 de 3 filas" in respuesta.get_data(as_text=True)
+    assert len(cliente.get("/api/ventas").get_json()) == 6
 
 
 def test_importar_sin_elegir_archivo(cliente):

@@ -38,3 +38,40 @@ Resultados calculados por un programa independiente de la plantilla. Si su siste
 | 4 | Escuela Normal | 5 | 2 | 1 | 2 | 7 | 5 | +2 | **7** |
 | 5 | Colegio Nacional | 5 | 1 | 1 | 3 | 6 | 11 | -5 | **4** |
 | 6 | IPEM 25 | 5 | 0 | 2 | 3 | 3 | 6 | -3 | **2** |
+
+## Práctica 4 · Taller mecánico y aseguradoras (estilo ONIET 2025)
+
+- Registros: **60** (48 del CSV + 12 del JSON). Período **01/2024 a 06/2026**.
+
+Reporte 1 · compañías por total de cobertura (facturado × porcentaje / 100):
+
+| Pos | Compañía | Facturado | Total cobertura |
+|---|---|---|---|
+| 1 | Cobertura Total | $ 31.315.250,00 | **$ 27.617.332,50** |
+| 2 | Aseguradora Andina | $ 26.565.000,00 | **$ 23.863.575,00** |
+| 3 | La Protectora | $ 26.972.250,00 | **$ 20.218.587,50** |
+| 4 | Seguros del Plata | $ 15.355.500,00 | **$ 12.590.725,00** |
+
+Reporte 2 · regiones por cantidad de servicios:
+
+| Pos | Región | Servicios |
+|---|---|---|
+| 1 | NOA | **417** |
+| 2 | Centro | **387** |
+| 3 | Patagonia | **348** |
+| 4 | Cuyo | **162** |
+
+## Práctica 5 · Barrios populares y paquetes de ayuda (estilo ONIET 2021)
+
+- Barrios: **27** en 4 provincias.
+
+Totales por provincia (antes de asignar paquetes):
+
+| Provincia | Barrios | Familias |
+|---|---|---|
+| Buenos Aires | 7 | 1733 |
+| Córdoba | 9 | 1700 |
+| Mendoza | 7 | 1722 |
+| Tucumán | 4 | 1120 |
+
+Las asignaciones de paquetes las carga cada equipo, así que el ranking depende de lo que asignen: verifiquen a mano 2 o 3 barrios (paquetes asignados ÷ familias).

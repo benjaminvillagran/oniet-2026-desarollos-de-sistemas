@@ -3,6 +3,14 @@
 Fuente: reglamento oficial *012 Desarrollo de Sistemas 2026* (ONIET · Universidad Blas Pascal).
 Ante cualquier duda manda el reglamento original y lo que diga la organización.
 
+> 📅 **ONIET 2026 (30.ª edición): del 2 al 9 de octubre de 2026** en el campus de la UBP, según la
+> web de la UBP. El cronograma de ONIET ubica "Desarrollo de Sistemas" a las 14 h; confirmar el día.
+>
+> ⚠️ **Confirmar ya con la organización** (competencias.oniet@ubp.edu.ar u oniet@ubp.edu.ar):
+> la página de la competencia dice que se rinde "en computadoras provistas por la Universidad" y
+> menciona una duración de unas 4 horas. Nuestro plan asume notebooks propias y 14:00–16:30.
+> Si no se permiten notebooks, ver "Plan B" en `04_IAS_Y_PROMPTS.md`.
+
 ## Lo que dice el reglamento y qué hacemos al respecto
 
 | Regla | Qué hacemos |

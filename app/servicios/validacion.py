@@ -118,6 +118,10 @@ def validar_venta(datos: dict[str, Any]) -> tuple[dict[str, Any] | None, dict[st
         except ValueError as error:
             errores["precio_unitario"] = str(error)
 
+    # Reglas entre campos van acá, cuando los dos campos ya son válidos. Ejemplo (torneo):
+    #     if "local" in venta and venta["local"] == venta.get("visitante"):
+    #         errores["visitante"] = "Un equipo no puede jugar contra sí mismo."
+
     if errores:
         return None, errores
     return venta, {}

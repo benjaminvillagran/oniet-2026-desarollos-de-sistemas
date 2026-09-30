@@ -17,6 +17,7 @@
                 <input id="archivo" name="archivo" type="file" required
                        accept="{% for formato in formatos %}.{{ formato }}{{ ',' if not loop.last }}{% endfor %}">
             </div>
+            <label class="casilla"><input type="checkbox" name="forzar" value="1"> Importar aunque ya se haya importado</label>
             <button class="boton" type="submit">Importar y procesar</button>
         </form>
         <h3>O desde una dirección web (API)</h3>

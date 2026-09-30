@@ -57,6 +57,9 @@ def test_a_fecha_rechaza_fechas_invalidas(valor):
 def test_normalizar_clave_y_texto():
     assert normalizar_clave("Precio Unitario ($)") == "precio_unitario"
     assert normalizar_clave("  Categoría ") == "categoria"
+    assert normalizar_clave("CompaniaSeguro") == "compania_seguro"
+    assert normalizar_clave("NumeroRegistro") == "numero_registro"
+    assert normalizar_clave("ID") == "id"
     assert normalizar_texto("  Juan   Pérez ") == "Juan Pérez"
 
 

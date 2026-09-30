@@ -1,0 +1,49 @@
+NumeroRegistro;CompaniaSeguro;Anio;Mes;CantidadServicios;Region;ValorPorServicio;PorcentajeCobertura
+1;Aseguradora Andina;2024;1;12;NOA;70000;87
+2;La Protectora;2024;1;8;Patagonia;61500;70
+3;Cobertura Total;2024;2;20;Centro;70000;88
+4;La Protectora;2024;2;21;Patagonia;83250;75
+5;Seguros del Plata;2024;3;16;Centro;52000;75
+6;Cobertura Total;2024;3;7;Centro;52000;93
+7;Cobertura Total;2024;4;23;Patagonia;83250;88
+8;Aseguradora Andina;2024;4;34;Patagonia;70000;92
+9;Cobertura Total;2024;5;15;Centro;83250;88
+10;La Protectora;2024;5;33;NOA;45000;70
+11;Aseguradora Andina;2024;6;28;Centro;61500;92
+12;La Protectora;2024;6;5;Cuyo;61500;70
+13;La Protectora;2024;7;31;Cuyo;70000;80
+14;Aseguradora Andina;2024;7;7;Cuyo;45000;92
+15;Aseguradora Andina;2024;8;37;Centro;52000;92
+16;Seguros del Plata;2024;8;6;Centro;70000;80
+17;Cobertura Total;2024;9;23;Patagonia;70000;83
+18;Seguros del Plata;2024;9;5;Patagonia;70000;80
+19;Aseguradora Andina;2024;10;28;NOA;70000;87
+20;Cobertura Total;2024;10;30;Patagonia;70000;83
+21;Cobertura Total;2024;11;4;Cuyo;83250;93
+22;La Protectora;2024;11;32;Centro;61500;75
+23;Cobertura Total;2024;12;16;Centro;52000;93
+24;La Protectora;2024;12;39;Centro;70000;75
+25;Cobertura Total;2025;1;38;Centro;85000;93
+26;Seguros del Plata;2025;1;10;NOA;76500;85
+27;La Protectora;2025;2;12;Patagonia;76500;75
+28;Cobertura Total;2025;2;22;Patagonia;98250;83
+29;Cobertura Total;2025;3;31;Centro;60000;88
+30;Aseguradora Andina;2025;3;25;NOA;67000;87
+31;La Protectora;2025;4;20;Patagonia;85000;75
+32;Cobertura Total;2025;4;24;Cuyo;85000;88
+33;La Protectora;2025;5;30;Patagonia;67000;70
+34;Aseguradora Andina;2025;5;8;NOA;60000;92
+35;Seguros del Plata;2025;6;14;Cuyo;76500;85
+36;Aseguradora Andina;2025;6;23;Cuyo;98250;97
+37;La Protectora;2025;7;19;Patagonia;76500;75
+38;Aseguradora Andina;2025;7;34;NOA;85000;87
+39;La Protectora;2025;8;25;Centro;76500;80
+40;Seguros del Plata;2025;8;27;Patagonia;85000;85
+41;La Protectora;2025;9;13;Centro;98250;75
+42;Aseguradora Andina;2025;9;26;Patagonia;60000;87
+43;Aseguradora Andina;2025;10;3;Patagonia;98250;87
+44;Cobertura Total;2025;10;26;Centro;60000;88
+45;Cobertura Total;2025;11;3;NOA;98250;83
+46;Aseguradora Andina;2025;11;34;NOA;60000;87
+47;Aseguradora Andina;2025;12;33;Centro;76500;87
+48;Cobertura Total;2025;12;33;Cuyo;67000;88

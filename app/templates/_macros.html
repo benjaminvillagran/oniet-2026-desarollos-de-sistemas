@@ -8,6 +8,7 @@
 </div>
 {% endmacro %}
 
+{# Formulario de filtros del ejemplo de ventas (búsqueda, categoría y fechas): adaptarlo al problema #}
 {% macro filtros_ventas(filtros, categorias, destino) %}
 <form class="filtros" method="get" action="{{ destino }}">
     <div class="campo">
@@ -38,10 +39,11 @@
 </form>
 {% endmacro %}
 
+{# Encabezado de tabla que ordena al hacer clic. Sirve para cualquier listado (usa la página actual) #}
 {% macro encabezado_ordenable(columna, titulo, orden, direccion, filtros, clase='') %}
 {% set nueva_direccion = 'asc' if (orden == columna and direccion == 'desc') else 'desc' %}
 <th class="{{ clase }}">
-    <a class="ordenable" href="{{ url_for('ventas.listado', orden=columna, direccion=nueva_direccion, **filtros.como_diccionario()) }}">
+    <a class="ordenable" href="{{ url_for(request.endpoint, orden=columna, direccion=nueva_direccion, **filtros.como_diccionario()) }}">
         {{ titulo }}{% if orden == columna %} {{ '▲' if direccion == 'asc' else '▼' }}{% endif %}
     </a>
 </th>

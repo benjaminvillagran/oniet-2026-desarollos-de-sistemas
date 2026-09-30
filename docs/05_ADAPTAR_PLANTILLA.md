@@ -28,6 +28,17 @@ se reemplaza "ventas" por el problema real. Con IA: `/adaptar-plantilla` despué
 | 9 | `app/config.py` | `NOMBRE_SISTEMA`, `NOMBRE_EQUIPO` | Se ve en el encabezado |
 | 10 | `tests/` | Datos de prueba del problema nuevo | `python herramientas/verificar.py` |
 
+**Reemplazar, no duplicar.** La entidad principal ocupa el lugar de "ventas": renombrar los
+archivos con `git mv` (`ventas_repositorio.py` → `partidos_repositorio.py`, etc.) y al final
+buscar restos con `grep -ril venta app tests herramientas` (Windows: `findstr /s /i /m venta app\*.* tests\*.*`).
+
+**Partes atadas al ejemplo que se olvidan fácil**: `FiltrosVentas`, el macro `filtros_ventas`, la
+lista de gráficos en `estadisticas.html`, los KPIs de `inicio.html`, `COLUMNAS_EXPORTACION`,
+`CSV_VALIDO` en `tests/conftest.py` y `data/ejemplos/`.
+
+**Tests**: los de ventas se **reemplazan** por tests del problema real (es lo esperado). Lo que no se
+hace nunca es borrar o debilitar un test para que "pase".
+
 > **Importante:** después de cambiar `schema.sql` hay que reiniciar la base
 > (`flask --app run reiniciar-db` o borrar `instance/datos.db`). Si no, las tablas viejas siguen ahí.
 

@@ -40,6 +40,7 @@ CSS propio en `app/static/css/estilos.css`, Chart.js local en `app/static/vendor
 | `app/servicios/validacion.py` | VALIDAR cada fila (columnas, alias, reglas) | Devuelve errores con fila, campo y motivo |
 | `app/servicios/procesamiento.py` | PROCESAR: cálculos y estadísticas | Funciones puras (sin base de datos), con tests |
 | `app/servicios/*_servicio.py` | Coordinar el recorrido y las transacciones | Usan `with transaccion():` para escribir |
+| `app/servicios/autenticacion_servicio.py` | Login opcional (usuarios, claves con hash, último acceso) | Se activa con `LOGIN_OBLIGATORIO` en `app/config.py` |
 | `app/repositorios/` | GUARDAR y consultar (solo SQL) | Siempre parámetros `?`; **no hacen commit** |
 | `app/utils/conversiones.py` | Pasar texto a número/fecha (`a_decimal`, `a_entero`, `a_fecha`) | Lanzan `ValueError` con mensaje en español |
 | `app/utils/formato.py` | Formato argentino para mostrar | Filtros Jinja: `moneda`, `numero`, `fecha`, `mes`, `porcentaje` |
@@ -48,7 +49,9 @@ CSS propio en `app/static/css/estilos.css`, Chart.js local en `app/static/vendor
 
 ## Adaptar la plantilla a la consigna (en este orden)
 
-La plantilla trae un ejemplo completo de **ventas**. Para el problema real:
+La plantilla trae un ejemplo completo de **ventas**: importar (archivo o URL/API), listado con
+filtros, orden, paginación y totales, detalle, alta, edición, baja, estadísticas con gráficos,
+exportación CSV, API JSON, historial de importaciones y login opcional. Para el problema real:
 
 1. `app/schema.sql`: tablas y columnas del problema.
 2. `app/servicios/validacion.py`: `COLUMNAS`, `ALIAS` y reglas de `validar_*`.
@@ -57,11 +60,25 @@ La plantilla trae un ejemplo completo de **ventas**. Para el problema real:
 5. `app/servicios/*_servicio.py` y `app/rutas/`: conectar todo.
 6. `app/templates/` y el menú de `base.html`.
 7. `data/ejemplos/`: poner los archivos de datos de la consigna.
-8. `app/config.py`: `NOMBRE_SISTEMA` y `NOMBRE_EQUIPO`.
+8. `app/config.py`: `NOMBRE_SISTEMA`, `NOMBRE_EQUIPO` y `LOGIN_OBLIGATORIO = True` si la consigna
+   pide usuarios.
 9. Actualizar los tests y correr `python herramientas/verificar.py --arreglar`.
 
-Para una entidad nueva, **copiar el patrón de ventas** (repositorio + servicio + rutas + plantillas +
-tests) en archivos nuevos. Después de cambiar `schema.sql`, reiniciar la base.
+**Reemplazar, no duplicar**: la entidad principal ocupa el lugar de "ventas". Renombrar con
+`git mv` (por ejemplo `git mv app/repositorios/ventas_repositorio.py app/repositorios/partidos_repositorio.py`)
+y después buscar lo que quedó: `grep -ril venta app tests herramientas` (Windows:
+`findstr /s /i /m venta app\*.* tests\*.*`). Si hay **otra** entidad además de la principal, se
+agrega copiando el patrón (repositorio + servicio + rutas + plantillas + tests) en archivos nuevos.
+Después de cambiar `schema.sql`, reiniciar la base.
+
+Partes atadas al ejemplo de ventas que también hay que adaptar: `FiltrosVentas` (repositorio de
+ventas), macro `filtros_ventas` en `_macros.html`, lista de gráficos en `estadisticas.html`,
+`COLUMNAS_EXPORTACION` en `reportes_servicio.py`, `CSV_VALIDO` en `tests/conftest.py` y los archivos
+de `data/ejemplos/`.
+
+**Cálculos**: lo que depende de una sola fila (ej.: total = cantidad × precio) se calcula al
+importar y se guarda. Lo agregado (rankings, tablas de posiciones, totales por grupo) se calcula
+**al consultar** en `procesamiento.py` y no se guarda.
 
 ## Convenciones de código
 
@@ -76,7 +93,10 @@ tests) en archivos nuevos. Después de cambiar `schema.sql`, reiniciar la base.
 - Cada página nueva extiende `base.html` y tiene su link en el menú.
 - Usar las clases existentes: `tarjeta`, `grilla-2`, `grilla-kpi` + macro `kpi`, `tabla` dentro de
   `tabla-contenedor`, `boton` (`--secundario`, `--peligro`, `--chico`), `formulario` / `campo` /
-  `mensaje-error`, `alerta--exito|error|aviso|info`, `vacio`, `etiqueta`, `barra`.
+  `mensaje-error`, `alerta--exito|error|aviso|info`, `vacio`, `etiqueta` (`--exito`, `--error`,
+  `--aviso`), `barra`, `ficha` (detalle), `casilla` (checkbox).
+- Gráficos: agregar un `<canvas id="...">` y un elemento a la lista `datos_graficos` de la plantilla
+  (ver `app/static/js/graficos.js`).
 - Siempre: estado vacío ("todavía no hay datos"), mensajes `flash`, y `data-confirmar` en formularios
   que borran.
 - Números con `| moneda` o `| numero`, fechas con `| fecha`.
@@ -84,6 +104,8 @@ tests) en archivos nuevos. Después de cambiar `schema.sql`, reiniciar la base.
 ## Tests y verificación
 
 - Toda función nueva de validación o procesamiento lleva su test en `tests/`.
+- Al adaptar la plantilla, los tests del ejemplo de ventas se **reemplazan** por tests del problema
+  real: eso es lo esperado.
 - Antes de decir "terminado": `python herramientas/verificar.py --arreglar` tiene que dar todo OK.
 - **Prohibido** borrar, saltear o debilitar tests para que pasen: se arregla el código.
 

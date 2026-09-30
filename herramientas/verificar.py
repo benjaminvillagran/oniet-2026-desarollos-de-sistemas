@@ -20,7 +20,6 @@ import tempfile
 from pathlib import Path
 
 CARPETA_PROYECTO = Path(__file__).resolve().parent.parent
-PAGINAS_PRINCIPALES = ["/", "/importar/", "/importar/historial", "/ventas/", "/estadisticas"]
 
 fallas: list[str] = []
 
@@ -65,14 +64,28 @@ def revisar_estilo(arreglar: bool) -> None:
     chequeo = ejecutar([ruff, "check", "."])
     formato = ejecutar([ruff, "format", "--check", "."])
     ok = chequeo.returncode == 0 and formato.returncode == 0
-    detalle = "" if ok else "corré: python herramientas/verificar.py --arreglar"
+    if ok:
+        detalle = ""
+    elif arreglar:
+        detalle = "quedan errores que ruff no arregla solo: corregilos a mano (ver abajo)"
+    else:
+        detalle = "corré: python herramientas/verificar.py --arreglar"
     registrar("Estilo de código (ruff)", ok, detalle)
     if chequeo.returncode != 0:
         print(chequeo.stdout[-3000:])
 
 
+def paginas_del_sistema(app) -> list[str]:
+    """Todas las páginas GET sin parámetros (se toman de las rutas reales del sistema)."""
+    return sorted(
+        regla.rule
+        for regla in app.url_map.iter_rules()
+        if "GET" in regla.methods and not regla.arguments and regla.endpoint != "static"
+    )
+
+
 def revisar_arranque() -> None:
-    """Levanta el sistema con una base temporal y pide las páginas principales."""
+    """Levanta el sistema con una base temporal y pide todas sus páginas."""
     sys.path.insert(0, str(CARPETA_PROYECTO))
     try:
         from app import create_app
@@ -80,17 +93,32 @@ def revisar_arranque() -> None:
         with tempfile.TemporaryDirectory() as carpeta:
             app = create_app({"TESTING": True, "DATABASE": str(Path(carpeta) / "verif.db")})
             cliente = app.test_client()
-            fallidas = [url for url in PAGINAS_PRINCIPALES if cliente.get(url).status_code != 200]
-        registrar("El sistema arranca y responde", not fallidas, ", ".join(fallidas))
+            paginas = paginas_del_sistema(app)
+            fallidas = [url for url in paginas if cliente.get(url).status_code >= 400]
+        detalle = ", ".join(fallidas) if fallidas else f"{len(paginas)} páginas"
+        registrar("El sistema arranca y responde", not fallidas, detalle)
     except Exception as error:  # cualquier error acá significa que el sistema no arranca
         registrar("El sistema arranca y responde", False, f"{type(error).__name__}: {error}")
 
 
+SECCIONES_README = ("## Cómo ejecutarlo", "## Funcionalidades", "## Uso de inteligencia artificial")
+
+
 def revisar_entrega() -> None:
     readme = CARPETA_PROYECTO / "README.md"
-    pendientes = readme.read_text(encoding="utf-8").count("COMPLETAR") if readme.exists() else 1
+    texto = readme.read_text(encoding="utf-8") if readme.exists() else ""
+    faltan = [seccion.lstrip("# ") for seccion in SECCIONES_README if seccion not in texto]
+    pendientes = texto.count("COMPLETAR")
+    problemas = []
+    if pendientes:
+        problemas.append(f"{pendientes} 'COMPLETAR'")
+    if faltan:
+        problemas.append(f"faltan secciones: {', '.join(faltan)}")
     registrar(
-        "README sin partes por completar", pendientes == 0, f"{pendientes} 'COMPLETAR'", False
+        "README de entrega completo",
+        not problemas,
+        "; ".join(problemas) + (" (usar docs/plantillas/README_ENTREGA.md)" if problemas else ""),
+        obligatorio=False,
     )
 
     if shutil.which("git"):

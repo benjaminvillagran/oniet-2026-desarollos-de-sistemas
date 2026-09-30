@@ -17,8 +17,26 @@ notebooks que van a llevar.
    - Puntaje estimado con `/revisar-rubrica`.
 7. Mejorar las skills, prompts o este documento con lo aprendido.
 
+> El número de fila de los errores cuenta la línea de encabezado: la primera fila de datos es la 2.
+>
 > Los datos de práctica están en `data/practica/` y tienen **errores a propósito** (como pasaría
 > en la competencia): el sistema tiene que rechazarlos e informarlos sin romperse.
+
+## Así fueron las consignas reales de ONIET
+
+Encontradas en repositorios públicos de participantes (enunciados oficiales en PDF):
+
+| Año | Tema | Datos | Qué pedía |
+|---|---|---|---|
+| 2020 | COVID-19 por país | API pública (JSON) | Login con fecha de último acceso (30 %), configuración de usuario (40 %), dashboard con casos e históricos de 10 días (30 %) |
+| 2021 | ONG que asigna paquetes de ayuda a barrios populares | CSV de datos.gob.ar | Login (5 %), listado filtrado por provincia y localidad (25 %), detalle (20 %), asignar paquetes (10 %), sumatorias por localidad y provincia (20 %), top N con menor proporción paquetes/familia y desempate al azar (20 %) |
+| 2023 | Control de calidad de producción (según repos de participantes) | JSON | Registros por empresa y mes con piezas fallidas |
+| 2025 | Taller mecánico y compañías de seguro | CSV **y** JSON (con BOM y números como texto) | Ranking de compañías por total de cobertura; ranking de regiones por servicios |
+
+Lo que se repite: **leer CSV/JSON (a veces una API), validar, guardar, filtrar, ver detalle,
+modificar registros, sumar/agrupar y rankear**; a veces **login**. Los enunciados evaluaban también
+diseño (simple, tolerante a fallos), prolijidad del código, UX intuitiva y **tiempo de entrega**.
+La plantilla ya cubre todo eso (incluido login opcional e importación desde URL).
 
 ---
 
@@ -64,9 +82,45 @@ Columnas: `fecha`, `local`, `visitante`, `goles_local`, `goles_visitante`.
    no puede jugar contra sí mismo.
 2. Arme la **tabla de posiciones**: PJ, PG, PE, PP, GF, GC, DG y puntos (ganado 3, empate 1,
    perdido 0). Orden: puntos, después diferencia de gol, después goles a favor, después nombre.
-3. Muestre: goles totales, promedio de goles por partido y el partido con más goles.
+3. Muestre: goles totales, promedio de goles por partido y el partido con más goles (si hay
+   empate, el primero por fecha).
 4. Permita cargar un partido a mano y ver cómo se actualiza la tabla.
 5. Muestre el historial de partidos de un equipo elegido.
 
 > Esta práctica tiene una dificultad extra: la tabla de posiciones **no está en el archivo**, hay
 > que calcularla (procesamiento puro). Es el tipo de cálculo que más puntos da en la rúbrica.
+
+## Práctica 4 · Taller mecánico y aseguradoras (estilo ONIET 2025)
+
+**Archivos:** `data/practica/taller_servicios_2024_2025.csv` (separado por `;`) y
+`data/practica/taller_servicios_2026.json` (lista de objetos). Hay que cargar **los dos**.
+Columnas: `NumeroRegistro`, `CompaniaSeguro`, `Anio`, `Mes`, `CantidadServicios`, `Region`,
+`ValorPorServicio`, `PorcentajeCobertura`.
+
+Trampas (como en la consigna real): el JSON viene con BOM y **todos los valores como texto**; el
+porcentaje es un entero (`88` significa 88 %).
+
+1. Importar ambos archivos a la base, sin duplicar registros (`NumeroRegistro` es único).
+2. **Facturado** = `CantidadServicios × ValorPorServicio`; **total de cobertura** = facturado ×
+   `PorcentajeCobertura` / 100.
+3. **Reporte 1**: ranking de compañías por total de cobertura, de mayor a menor.
+4. **Reporte 2**: ranking de regiones por cantidad de servicios.
+5. Mostrar el período que abarcan los datos ("Período 01/2024 a 06/2026") calculado de los datos.
+6. Filtros por año y por compañía.
+
+## Práctica 5 · Barrios populares y paquetes de ayuda (estilo ONIET 2021)
+
+**Archivo:** `data/practica/barrios_populares.csv` (separado por `,`).
+Columnas: `id_barrio`, `nombre_barrio`, `provincia`, `localidad`, `cantidad_familias`.
+
+1. **Login** de usuarios (activar `LOGIN_OBLIGATORIO` en `app/config.py`).
+2. Listado de barrios filtrado por provincia y por localidad.
+3. **Detalle** de un barrio con sus paquetes asignados.
+4. **Asignar paquetes** a un barrio (cantidad y fecha): se guarda en una tabla nueva
+   `asignaciones` relacionada con el barrio.
+5. Sumatorias de familias y de paquetes por localidad y por provincia.
+6. Los **N barrios con menor proporción paquetes/familias** (N lo elige el usuario); si hay empate,
+   se desempata al azar.
+
+> Esta práctica ejercita **dos entidades relacionadas** (barrios y asignaciones): seguir
+> "Si el problema tiene más de una entidad" en `05_ADAPTAR_PLANTILLA.md`.

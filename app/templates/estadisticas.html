@@ -84,16 +84,19 @@
         </table>
     </section>
 
-    {% set datos_graficos = {
-        "categorias": {
+    {# Lista de gráficos: cada uno necesita un <canvas> con el mismo id (ver static/js/graficos.js) #}
+    {% set datos_graficos = [
+        {
+            "id": "grafico-categorias", "tipo": "bar", "titulo": "Facturación", "formato": "moneda",
             "etiquetas": datos.por_categoria | map(attribute="nombre") | list,
             "valores": datos.por_categoria | map(attribute="valor") | list
         },
-        "meses": {
+        {
+            "id": "grafico-meses", "tipo": "line", "titulo": "Facturación mensual", "formato": "moneda",
             "etiquetas": datos.por_mes | map(attribute="mes") | map("mes") | list,
             "valores": datos.por_mes | map(attribute="valor") | list
         }
-    } %}
+    ] %}
     <script id="datos-graficos" type="application/json">{{ datos_graficos | tojson }}</script>
 {% endif %}
 {% endblock %}

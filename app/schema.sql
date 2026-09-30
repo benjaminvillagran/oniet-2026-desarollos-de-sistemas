@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS importaciones (
     fecha_hora      TEXT    NOT NULL,
     filas_leidas    INTEGER NOT NULL,
     filas_guardadas INTEGER NOT NULL,
-    filas_con_error INTEGER NOT NULL
+    filas_con_error INTEGER NOT NULL,
+    hash_contenido  TEXT                                   -- huella del archivo: detecta repetidos
 );
 
 -- Datos del problema. En la plantilla: ventas de un comercio.

@@ -35,8 +35,10 @@ def normalizar_clave(texto) -> str:
     """Convierte un encabezado de columna en nombre de campo.
 
     'Precio Unitario ($)' -> 'precio_unitario'      'Categoría' -> 'categoria'
+    'CompaniaSeguro' -> 'compania_seguro'           'precioUSD' -> 'precio_usd'
     """
-    limpio = quitar_acentos(normalizar_texto(texto)).lower()
+    limpio = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", normalizar_texto(texto))  # separa camelCase
+    limpio = quitar_acentos(limpio).lower()
     return re.sub(r"[^a-z0-9]+", "_", limpio).strip("_")
 
 
