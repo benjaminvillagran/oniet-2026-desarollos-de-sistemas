@@ -7,7 +7,7 @@ Primero correr `python herramientas/diagnostico.py --rol A|B|C` y
 
 | Síntoma | Solución |
 |---|---|
-| `python` abre la Microsoft Store o dice "Python was not found" | *Configuración → Aplicaciones → Configuración avanzada → Alias de ejecución de aplicaciones*: desactivar `python.exe` y `python3.exe`. O usar `py` en lugar de `python` |
+| `python` abre la Microsoft Store o dice "Python was not found" | Inicio → escribir **Administrar alias de ejecución de aplicaciones** → desactivar las entradas de Python del *Instalador de aplicaciones* (`python.exe` y `python3.exe`). O usar `py` en lugar de `python` |
 | `python` no se reconoce | Reinstalar Python tildando "Add python.exe to PATH" (el instalador tiene la opción *Modify*). Mientras tanto, usar `py` |
 | "running scripts is disabled on this system" al activar `.venv` | `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`, o usar la terminal **cmd**, o no activar y correr `.venv\Scripts\python.exe run.py` |
 | `ModuleNotFoundError: No module named 'flask'` | El entorno no está activado o faltan paquetes: `iniciar.bat`, o `.venv\Scripts\python.exe -m pip install -r requirements-dev.txt` |
@@ -25,9 +25,12 @@ Primero correr `python herramientas/diagnostico.py --rol A|B|C` y
 | Los cambios no se ven en el navegador | Guardar el archivo; el servidor en modo debug se recarga solo. Si no, Ctrl+C y `python run.py`. Para CSS: `Ctrl+F5` |
 | `jinja2.exceptions.UndefinedError` | La plantilla usa una variable que la ruta no le pasa: revisar el `render_template(...)` |
 | `werkzeug.routing.BuildError` | Un `url_for('...')` apunta a una ruta que se renombró: buscar el nombre viejo en `templates/` |
+| "Archivo muy grande" (por ejemplo un GeoJSON de datos abiertos) | Subir `MAX_CONTENT_LENGTH` en `app/config.py` (ej.: `16 * 1024 * 1024`) |
+| "Pedido rechazado" (403) al enviar un formulario | El formulario se envió desde otra dirección: abrir el sistema siempre desde http://127.0.0.1:5000 |
+| "Tiene más valores que columnas" al importar | CSV separado por comas con números con coma decimal sin comillas: exportarlo con `;` como separador |
 | "Faltan columnas obligatorias" al importar | Los encabezados del archivo no coinciden: agregar el nombre a `ALIAS` en `validacion.py` |
 | Acentos raros (Ã©) al importar | El lector ya prueba UTF-8 y cp1252; si persiste, guardar el CSV como "UTF-8" desde Excel |
-| Números mal leídos (1.500 → 1,5) | El archivo usa punto de miles sin coma decimal: ajustar `a_decimal` y agregar un test con ese caso |
+| Números mal leídos | `a_decimal` sigue el formato argentino: `1.500` = 1500 y `1,5` = 1,5. Si el archivo usa punto decimal con 3 decimales (`2.675` como 2,675), ajustarlo y agregar un test |
 | Error 500 | Mirar la terminal donde corre el servidor: ahí está el error completo. Copiarlo entero a la IA (prompt 6 de `04_IAS_Y_PROMPTS.md`) |
 
 ## Git y GitHub
@@ -55,7 +58,7 @@ Primero correr `python herramientas/diagnostico.py --rol A|B|C` y
 | Antigravity: Gemini lento o error 503 | Cambiar a Gemini 3.7 Flash; si sigue, Claude Sonnet 4.6 (otro cupo) |
 | Antigravity: "Agent execution terminated due to error" o sesión trabada | Cerrar sesión, esperar 30 segundos, volver a entrar. Si no, cerrar la app, esperar 15 segundos y reabrir |
 | Antigravity: el agente queda en "Running…" | Cancelar. Si estaba iniciando el servidor, levantarlo a mano en tu terminal |
-| Antigravity: "Failed to install playwright: $HOME is not set" | Crear la variable de usuario `HOME=%USERPROFILE%` y reiniciar |
-| Antigravity: el navegador abre Edge en vez de Chrome | Instalar Chrome y ponerlo como navegador predeterminado |
+| Antigravity: "failed to install playwright: $HOME environment variable is not set" | Crear la variable de usuario `HOME=%USERPROFILE%` y reiniciar |
+| Antigravity: el agente de navegador no arranca | Instalar Chrome y ponerlo como navegador predeterminado (requisito oficial de `/browser`) |
 | La IA entra en bucle o empeora las cosas | Cancelar, `/rewind` (Claude Code) o `git restore .`, `/clear` y pedir algo más chico |
 | La IA quiere instalar una librería nueva | No. Pedir que lo resuelva con lo que hay en `requirements.txt` |

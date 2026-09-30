@@ -54,14 +54,17 @@ filtros, orden, paginación y totales, detalle, alta, edición, baja, estadísti
 exportación CSV, API JSON, historial de importaciones y login opcional. Para el problema real:
 
 1. `app/schema.sql`: tablas y columnas del problema.
-2. `app/servicios/validacion.py`: `COLUMNAS`, `ALIAS` y reglas de `validar_*`.
+2. `app/servicios/validacion.py`: `COLUMNAS`, `ALIAS` y reglas de `validar_*`. Los nombres van
+   en minúsculas con `_`, porque el lector normaliza los encabezados (`CompaniaSeguro` →
+   `compania_seguro`, `Categoría` → `categoria`). Si la consigna dice que un campo **no se repite**
+   ("X es único"), poner `CLAVE_UNICA = "x"`: la importación rechaza los repetidos.
 3. `app/servicios/procesamiento.py`: los cálculos que pide la consigna, con tests.
 4. `app/repositorios/`: consultas SQL de las nuevas columnas y filtros.
 5. `app/servicios/*_servicio.py` y `app/rutas/`: conectar todo.
 6. `app/templates/` y el menú de `base.html`.
 7. `data/ejemplos/`: poner los archivos de datos de la consigna.
 8. `app/config.py`: `NOMBRE_SISTEMA`, `NOMBRE_EQUIPO` y `LOGIN_OBLIGATORIO = True` si la consigna
-   pide usuarios.
+   pide usuarios (los tests siguen corriendo sin login: lo apaga `tests/conftest.py`).
 9. Actualizar los tests y correr `python herramientas/verificar.py --arreglar`.
 
 **Reemplazar, no duplicar**: la entidad principal ocupa el lugar de "ventas". Renombrar con
@@ -72,13 +75,16 @@ agrega copiando el patrón (repositorio + servicio + rutas + plantillas + tests)
 Después de cambiar `schema.sql`, reiniciar la base.
 
 Partes atadas al ejemplo de ventas que también hay que adaptar: `FiltrosVentas` (repositorio de
-ventas), macro `filtros_ventas` en `_macros.html`, lista de gráficos en `estadisticas.html`,
-`COLUMNAS_EXPORTACION` en `reportes_servicio.py`, `CSV_VALIDO` en `tests/conftest.py` y los archivos
-de `data/ejemplos/`.
+ventas), macro `filtros_ventas` en `_macros.html`, menú de `base.html`, KPIs de `inicio.html` y
+`principal_rutas.py`, lista de gráficos en `estadisticas.html`, `reportes_rutas.py`, `api_rutas.py`,
+el botón "Ver ventas" de `importacion_resultado.html`, `COLUMNAS_EXPORTACION` en
+`reportes_servicio.py`, `CSV_VALIDO` en `tests/conftest.py` y los archivos de `data/ejemplos/`.
+Las páginas se registran solas: cada archivo `app/rutas/<algo>_rutas.py` con su variable `bp`.
 
 **Cálculos**: lo que depende de una sola fila (ej.: total = cantidad × precio) se calcula al
 importar y se guarda. Lo agregado (rankings, tablas de posiciones, totales por grupo) se calcula
-**al consultar** en `procesamiento.py` y no se guarda.
+**al consultar** en `procesamiento.py` y no se guarda. Para "los N primeros con desempate al azar"
+usar `primeros_n()` de `procesamiento.py` (en los tests, con `azar=random.Random(semilla)`).
 
 ## Convenciones de código
 
@@ -99,13 +105,15 @@ importar y se guarda. Lo agregado (rankings, tablas de posiciones, totales por g
   (ver `app/static/js/graficos.js`).
 - Siempre: estado vacío ("todavía no hay datos"), mensajes `flash`, y `data-confirmar` en formularios
   que borran.
-- Números con `| moneda` o `| numero`, fechas con `| fecha`.
+- Números con `| moneda` o `| numero` (0 decimales; para decimales `| numero(2)`), fechas con `| fecha`.
 
 ## Tests y verificación
 
 - Toda función nueva de validación o procesamiento lleva su test en `tests/`.
 - Al adaptar la plantilla, los tests del ejemplo de ventas se **reemplazan** por tests del problema
   real: eso es lo esperado.
+- Si un test del ejemplo contradice la consigna, **se reemplaza el test**. Nunca se cambia el
+  esquema ni la lógica para que pase un test heredado.
 - Antes de decir "terminado": `python herramientas/verificar.py --arreglar` tiene que dar todo OK.
 - **Prohibido** borrar, saltear o debilitar tests para que pasen: se arregla el código.
 

@@ -15,9 +15,10 @@ resultados** en 2 h 30 min, con ayuda de IA):
   y defensa ante el jurado.
 - **Verificación automática**: script local y workflow de GitHub Actions en Windows y Linux.
 
-## ⚠️ Urgente, antes de la competencia (2 al 9 de octubre)
+## ⚠️ Urgente, antes de la competencia (jueves 8 de octubre, 14:00 a 16:30, labs 3 y 4 de la UBP)
 
-1. **Confirmar con la organización** (competencias.oniet@ubp.edu.ar u oniet@ubp.edu.ar) si se
+1. **Confirmar con la organización** (mensajería interna del Sistema ONIET u oniet@ubp.edu.ar, los
+   canales oficiales del Reglamento 012; el reglamento habla de computadoras del laboratorio) si se
    pueden usar notebooks propias, IA y una plantilla preparada. Borrador del mail en
    [`docs/02_CONFIGURAR_NOTEBOOK.md`](docs/02_CONFIGURAR_NOTEBOOK.md).
 2. **Configurar las 3 notebooks** y correr `python herramientas/diagnostico.py --rol A|B|C`.
@@ -64,12 +65,13 @@ Antes de cada push: `verificar.bat` (o `python herramientas/verificar.py --arreg
 
 | Rúbrica | Qué trae |
 |---|---|
-| Lectura de datos | Importa CSV, TXT, JSON y Excel, o desde una URL/API. Detecta separador (`;` `,` tab `\|`), codificación (UTF-8, BOM, cp1252 de Excel) y encabezados con acentos o camelCase. Alta manual con formulario |
+| Lectura de datos | Importa CSV, TXT, JSON (también anidado y GeoJSON) y Excel, o desde una URL/API. Detecta separador (`;` `,` tab `\|`), codificación (UTF-8, BOM, cp1252 y UTF-16 de Excel), títulos arriba del encabezado y encabezados con acentos o camelCase. Probado con el dataset real de la consigna 2021 (6.467 barrios). Alta manual con formulario |
 | Procesamiento | Validación fila por fila con fila, campo y motivo; números y fechas en formato argentino; normalización; cálculos por fila; estadísticas, agrupaciones, porcentajes y rankings |
-| Almacenamiento | SQLite con restricciones y transacciones; historial de importaciones; detección de archivos repetidos |
+| Almacenamiento | SQLite con restricciones y transacciones; historial de importaciones; detección de archivos repetidos y de claves únicas repetidas (`CLAVE_UNICA`) |
 | Resultados | Listado con búsqueda, filtros, orden, paginación y fila de totales; detalle; edición y baja; estadísticas con gráficos; exportación CSV; API JSON |
 | Usabilidad | Diseño propio y responsive, mensajes claros, estados vacíos, confirmación antes de borrar, páginas de error propias; gráficos sin depender de internet |
-| Extras | Login opcional (`LOGIN_OBLIGATORIO`) con claves con hash y último acceso |
+| Extras | Login opcional (`LOGIN_OBLIGATORIO`) con claves con hash y último acceso; top N con desempate al azar (`primeros_n`) |
+| Seguridad | SQL parametrizado, escape de HTML, protección básica contra CSRF (Origin + SameSite), clave secreta aleatoria, página de error propia sin detalle técnico |
 
 ## Estructura
 

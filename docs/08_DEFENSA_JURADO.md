@@ -34,6 +34,9 @@ Navegador ──► rutas/ ──► servicios/ ──────────�
 | ¿Cómo leen los datos? | `lector.py` acepta CSV, JSON y Excel; detecta el separador y la codificación, y convierte todo a una lista de filas. |
 | ¿Qué pasa si el archivo tiene errores? | Cada fila se valida en `validacion.py`. Las filas válidas se guardan y las inválidas se informan con fila, campo y motivo. Si faltan columnas, se rechaza todo el archivo con un mensaje claro. |
 | ¿Dónde y cómo guardan? | En SQLite, que viene con Python. El esquema está en `schema.sql`, con restricciones `NOT NULL` y `CHECK`. Guardamos dentro de una transacción: si algo falla, no queda nada a medias. |
+| ¿Qué pasa si importan dos veces el mismo archivo? | Se detecta por su huella (SHA-256) y se avisa; no se duplican datos salvo que se marque "importar igual". Si la consigna tiene una clave única, los repetidos se rechazan fila por fila. |
+| ¿Y la seguridad de los formularios? | Rechazamos formularios enviados desde otra página web (encabezado Origin, protección básica contra CSRF), la cookie de sesión es SameSite=Lax y la clave secreta se genera al azar (no está fija en el código). Las claves de usuario se guardan con hash. |
+| ¿Qué pasa si hay un error inesperado? | Se muestra una página propia de "Error interno" (nunca el detalle técnico) y el detalle queda en la terminal para corregirlo. |
 | ¿Cómo evitan la inyección SQL? | Todas las consultas usan parámetros `?`. El único dato variable en el `ORDER BY` se toma de una lista fija de columnas permitidas. |
 | ¿Cómo saben que los cálculos están bien? | Los calculamos a mano con un ejemplo y escribimos tests con pytest (`tests/test_procesamiento.py`). Además, GitHub Actions corre los tests en cada push. |
 | ¿Por qué Flask y SQLite? | Son simples, no requieren instalar servidores y alcanzan de sobra para el volumen de datos de la consigna. |

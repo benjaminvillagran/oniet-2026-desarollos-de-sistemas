@@ -33,7 +33,8 @@ igual. El workflow de GitHub Actions avisa si un push rompió algo.
    ```
 
    Si el mail no es el de la cuenta de GitHub, los commits no aparecen como suyos.
-   El primer `push` abre el navegador para iniciar sesión (Git Credential Manager).
+   El primer `git push` abre una ventana de Git Credential Manager para iniciar sesión en
+   GitHub (conviene elegir la opción del navegador).
 4. Cada uno hace un **commit y push de prueba** para confirmar que tiene permiso.
 5. Reloj sincronizado: *Configuración → Hora e idioma → Fecha y hora → Sincronizar ahora*.
 

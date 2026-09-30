@@ -9,8 +9,8 @@ Antigravity lo lee directo y además `.agents/rules/`). Las **skills** del proye
 | Herramienta | Quién | Para qué | Cupo |
 |---|---|---|---|
 | Claude Code + **Claude Pro** (Sonnet) | A | Analizar la consigna, bugs difíciles, revisión final contra la rúbrica | **Limitado** (ventana de 5 h + semanal, compartido con claude.ai) |
-| Claude Code + **Ollama DeepSeek V4.1 Flash** | A | Volumen: modelo de datos, validación, repositorios, rutas, tests | Grande (plan Pro de Ollama: USD 60/mes, 3 pedidos a la vez) |
-| **Antigravity** · Gemini 3.8/3.7 Flash | B, C (y A) | HTML/CSS, cambios rápidos, planes | Grupo "Gemini": límite de 5 h + **semanal** |
+| Claude Code + **Ollama DeepSeek V4.1 Flash** | A | Volumen: modelo de datos, validación, repositorios, rutas, tests | Grande (plan Pro de Ollama: USD 20/mes con USD 60 de crédito de uso, 3 pedidos a la vez) |
+| **Antigravity** · Gemini 3.8/3.7 Flash | B, C (y A) | HTML/CSS, cambios rápidos, planes | Grupo "Gemini": cupo **semanal** (plan gratis) |
 | **Antigravity** · Claude Sonnet 4.6 | B, C | Páginas complejas, tests, README; reserva si Gemini falla | Grupo "Claude y GPT": cupo aparte |
 | **Antigravity** · Claude Opus 4.6 / Gemini 3.1 Pro | B, C | Solo un bug muy difícil | Gastan mucho cupo |
 | Antigravity · agente de navegador | B, C | Probar el sistema como el jurado (`/probar-en-navegador`) | — |
@@ -25,7 +25,8 @@ Datos verificados que cambian cómo trabajamos:
 - Con Claude Pro, el modelo por defecto es Opus, que gasta cupo mucho más rápido: usar
   **`/model sonnet`** siempre, salvo el análisis de la consigna.
 - En Claude Code con Ollama, `/model sonnet` u `opus` **siguen siendo DeepSeek** (Ollama los
-  reemplaza). Ollama no guarda caché: usar `/clear` seguido para no reenviar todo el contexto.
+  reemplaza). Ollama no acepta el control de caché de Anthropic (`cache_control`): usar `/clear` entre
+  tareas distintas para no reenviar todo el contexto.
 
 ## Cómo lanzar cada una (A)
 
@@ -68,8 +69,11 @@ hasta "plan mode"). Commit antes de cambiar de una a otra.
 | `Alt+V` | Pegar una captura de pantalla (Windows) |
 
 Opcional: copiar `docs/plantillas/claude_settings.json` a `.claude/settings.json` en la notebook.
-Fija el modelo en Sonnet, permite correr tests y el verificador sin preguntar, y **bloquea**
-`git push --force`, `git reset --hard` y borrados recursivos. Probarlo antes del día.
+Fija el modelo en Sonnet (queda como predeterminado para las sesiones siguientes), permite correr
+tests y el verificador sin preguntar, pide confirmación para `git push` y cualquier `rm`, y
+**bloquea** las formas más comunes de `git push --force`, `git reset --hard` y los borrados
+recursivos. No es una barrera total (por ejemplo, `rm -fr` no se detecta): igual hay que leer cada
+comando antes de aprobarlo. Probarlo antes del día.
 
 ## Antigravity: configuración y uso (B y C)
 

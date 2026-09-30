@@ -1,6 +1,7 @@
 # 03 · Plan del día de la competencia
 
-Horario oficial: **14:00 a 16:30** (2 h 30 min). Nuestro plan termina a las **16:05** y deja
+Horario oficial: **jueves 8 de octubre de 2026, 14:00 a 16:30** (2 h 30 min), laboratorios 3 y 4
+de la UBP. Nuestro plan termina a las **16:05** y deja
 **25 minutos de margen**. Si la organización confirma otro horario, se corre todo igual.
 
 ## Reglas de oro
@@ -25,8 +26,8 @@ Horario oficial: **14:00 a 16:30** (2 h 30 min). Nuestro plan termina a las **16
 | **B** | Interfaz y usabilidad | `app/templates/`, `app/static/` | **Antigravity**: Gemini 3.8 Flash (cambios rápidos) · Claude Sonnet 4.6 (páginas complejas) · navegador para ver cómo queda |
 | **C** | Datos, pruebas y documentación | `tests/`, `data/`, `README.md`, `docs/ANALISIS.md`, `docs/USO_IA.md` | **Antigravity**: Claude Sonnet 4.6 o Gemini 3.1 Pro (tests y README) · agente de navegador (`/probar-en-navegador`) |
 
-Cada uno usa **su propia cuenta** de cada herramienta. No se comparten cuentas ni claves: los
-términos de Anthropic y de Ollama lo piden ("una cuenta por persona").
+Cada uno usa **su propia cuenta** de cada herramienta. No se comparten cuentas ni claves: lo
+piden los términos de Anthropic y las preguntas frecuentes de Ollama ("una cuenta por persona").
 
 ## Antes de las 14:00 (llegar 13:15)
 

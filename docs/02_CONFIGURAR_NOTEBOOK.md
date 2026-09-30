@@ -29,8 +29,8 @@ mensajería del Sistema ONIET u oniet@ubp.edu.ar. Borrador:
 ## 1. Windows y reloj (las 3 notebooks)
 
 1. Actualizar Windows.
-2. **Reloj**: *Configuración → Hora e idioma → Fecha y hora* → "Establecer la hora
-   automáticamente" activado, zona **(UTC-03:00) Buenos Aires**, botón **Sincronizar ahora**.
+2. **Reloj**: *Configuración → Hora e idioma → Fecha y hora* → "Ajustar hora automáticamente"
+   activado, zona horaria de Buenos Aires (UTC-03:00) y, si aparece, el botón **Sincronizar ahora**.
    La hora de cada commit sale de este reloj, y **la hora del último commit es la hora de entrega**.
 3. Terminal por defecto **Símbolo del sistema (cmd)** en Antigravity/VS Code:
    `Ctrl+Shift+P` → *Terminal: Select Default Profile* → *Command Prompt*.
@@ -38,12 +38,14 @@ mensajería del Sistema ONIET u oniet@ubp.edu.ar. Borrador:
 
 ## 2. Python (las 3)
 
-1. Instalar **Python 3.12 o 3.13** desde el instalador `.exe` de python.org, tildando
-   **"Add python.exe to PATH"**. Alternativa: `winget install -e --id Python.Python.3.12 --source winget`.
+1. Instalar **Python 3.13** desde el instalador `.exe` de python.org, tildando la opción para
+   agregar Python al PATH. Alternativa: `winget install -e --id Python.Python.3.13 --source winget`.
+   (Python 3.12 solo recibe parches de seguridad y ya no tiene instaladores nuevos para Windows.)
    Usar la **misma versión** en las 3. No usar la versión de Microsoft Store.
 2. Cerrar y abrir la terminal: `python --version` y `py --version` tienen que responder.
-3. Si `python` abre la Microsoft Store: *Configuración → Aplicaciones → Configuración avanzada de
-   aplicaciones → Alias de ejecución de aplicaciones* → desactivar `python.exe` y `python3.exe`.
+3. Si `python` abre la Microsoft Store: Inicio → escribir **Administrar alias de ejecución de
+   aplicaciones** → desactivar las entradas de Python del *Instalador de aplicaciones*
+   (`python.exe` y `python3.exe`).
    Si igual falla, usar `py` en lugar de `python`.
 4. Si se usa PowerShell: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
    (sin esto, activar el entorno virtual da "running scripts is disabled").
@@ -61,8 +63,8 @@ mensajería del Sistema ONIET u oniet@ubp.edu.ar. Borrador:
    ```
 
 3. Aceptar la invitación de colaborador al repositorio de entrega (ver `06_GIT.md`).
-4. `git clone` del repositorio (no descargar ZIP). El primer `git push` abre el navegador para
-   iniciar sesión en GitHub (Git Credential Manager).
+4. `git clone` del repositorio (no descargar ZIP). El primer `git push` abre una ventana de Git
+   Credential Manager para iniciar sesión en GitHub (conviene elegir la opción del navegador).
 
 ## 4. El proyecto (las 3)
 
@@ -76,7 +78,8 @@ mensajería del Sistema ONIET u oniet@ubp.edu.ar. Borrador:
 ## 5. Herramientas de IA
 
 Cada persona usa **su propia cuenta**. No se comparten cuentas ni claves: los términos de
-Anthropic no lo permiten y los de Ollama indican "una cuenta por persona". La persona A además
+Anthropic no lo permiten y las preguntas frecuentes de Ollama (ollama.com/pricing) indican "una
+cuenta por persona". La persona A además
 responde por todo lo que se haga con su cuenta.
 
 ### A: Claude Code (Claude Pro)
@@ -105,8 +108,8 @@ responde por todo lo que se haga con su cuenta.
    ```
 
 5. Adentro, `/status`: tiene que mostrar el modelo de Ollama. `/context`: CLAUDE.md cargado.
-6. El plan Pro de Ollama permite **3 pedidos simultáneos** y USD 60 de uso por mes (revisar en
-   ollama.com/settings/usage).
+6. El plan Pro de Ollama cuesta USD 20 por mes (o USD 200 por año), incluye USD 60 de crédito de
+   uso por mes y permite **3 pedidos simultáneos** (revisar en ollama.com/settings/usage).
 
 > ⚠️ Nunca configurar `ANTHROPIC_AUTH_TOKEN` o `ANTHROPIC_BASE_URL` de forma permanente (`setx`):
 > Claude Code dejaría de usar la cuenta Pro. `ollama launch` los configura solo para esa ventana.
@@ -114,24 +117,32 @@ responde por todo lo que se haga con su cuenta.
 ### A, B y C: Google Antigravity
 
 1. Instalar desde antigravity.google/download e iniciar sesión con **Gmail personal**.
-2. Instalar **Google Chrome** (lo usa el agente de navegador).
+   Requisito oficial: Antigravity **no está disponible para menores de 18 años** (FAQ). El equipo
+   cumple (los 3 tienen 18).
+2. Instalar **Google Chrome** y ponerlo como **navegador predeterminado** (el comando `/browser`
+   lo exige).
 3. Crear la variable de entorno de usuario `HOME` con el valor `%USERPROFILE%` y reiniciar
-   (evita el error "Failed to install playwright: $HOME is not set" del navegador en Windows):
+   (evita el error "failed to install playwright: $HOME environment variable is not set" del
+   navegador en Windows):
    *Buscar "variables de entorno" → Editar las variables de entorno de esta cuenta → Nueva*.
 4. Abrir la carpeta del proyecto. Antigravity lee `AGENTS.md` y las reglas de `.agents/rules/`.
-5. **Configuración segura** (*Settings → Agent*):
-   - Ejecución de comandos en la terminal: **Request Review** (pedir aprobación). Agregar a la
-     lista permitida: `python`, `pip`, `git status`, `git diff`. **Nunca "Turbo" / "Always Proceed"**
-     (hay casos documentados de agentes que borraron archivos).
-   - Revisión de artefactos: **Agent Decides**.
-   - Acceso a archivos fuera del proyecto: **Ask** o **Deny**.
+5. **Configuración segura**:
+   - Terminal: en Windows, *Settings → Agent → Terminal Command Auto Execution* en **Request
+     Review** (las opciones son Request Review / Proceed in Sandbox / Always Proceed). En Mac/Linux
+     el preset se elige en *Settings → General → Permission Settings* (Default / Request Review /
+     Turbo). Agregar a la lista permitida (Allow list): `python`, `pip`, `git status`, `git diff`.
+     **Nunca "Always Proceed" ni "Turbo"** (hay casos documentados de agentes que borraron archivos).
+   - Revisión de artefactos: **Request Review** (la otra opción es Always Proceed).
+   - **Agent Non-Workspace File Access**: desactivado (así viene por defecto).
 6. Probar el agente de navegador: con el sistema corriendo (`iniciar.bat` en **su** terminal),
-   pedir `/browser Abrí http://127.0.0.1:5000 y sacá una captura`. La primera vez aparece
-   "Setup" para instalar la extensión en Chrome.
+   pedir `/browser Abrí http://127.0.0.1:5000 y sacá una captura`. No hace falta ninguna
+   extensión: el agente controla Chrome con una sesión de depuración (CDP).
 7. Revisar el cupo en **View Usage** (menú de modelos): hay dos grupos con cupo separado
-   ("Gemini" y "Claude y GPT"), cada uno con límite de 5 horas y **límite semanal**.
-   **No gastar el cupo los días anteriores a la competencia**: el semanal no se repone con el de
-   5 horas. Anotar qué día se reinicia.
+   ("Gemini" y "Claude y GPT"). En el plan gratis el cupo se renueva **una vez por semana** (la
+   renovación cada 5 horas es de los planes Pro y Ultra, aunque View Usage muestre las dos barras).
+   **No gastar el cupo los días anteriores a la competencia.** Anotar qué día se reinicia.
+   Ojo: la página oficial de modelos marca Claude Sonnet/Opus 4.6 en el plan gratis, pero la de
+   planes dice "third-party models" solo en Ultra: comprobar con las cuentas reales que aparecen.
 
 ### Prueba: ¿cada IA cargó las reglas del proyecto?
 

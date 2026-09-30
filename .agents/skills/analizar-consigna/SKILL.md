@@ -19,7 +19,11 @@ Objetivo: en 10 minutos pasar de la consigna a un plan concreto sobre la plantil
 2. Copiá la plantilla a `docs/ANALISIS.md` y completala:
    - Resumen del problema en 3 líneas y qué espera ver el jurado.
    - Entidades (tablas) con sus campos, tipo de dato y si son obligatorios.
-   - Reglas de validación de cada campo (rangos, formatos, valores permitidos).
+   - Reglas de validación de cada campo (rangos, formatos, valores permitidos) y **restricciones
+     de unicidad** ("X es único") con cómo se garantizan (`UNIQUE` en el esquema, `CLAVE_UNICA`
+     en la validación y un test de no duplicados).
+   - Si pide login/usuarios, desempates al azar o datos desde una API: anotarlo (la plantilla ya
+     trae `LOGIN_OBLIGATORIO`, `primeros_n()` e importación desde URL).
    - Cálculos y procesamiento pedidos, con un ejemplo numérico hecho a mano de cada uno.
    - Pantallas y salidas (listados, filtros, estadísticas, gráficos, exportación).
    - Mínimo indispensable vs. extras (si no alcanza el tiempo, se hace solo el mínimo).

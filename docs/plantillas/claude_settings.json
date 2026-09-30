@@ -21,6 +21,7 @@
       "PowerShell(git commit *)"
     ],
     "ask": [
+      "Bash(rm *)",
       "Bash(git push *)",
       "PowerShell(git push *)",
       "PowerShell(Remove-Item *)"

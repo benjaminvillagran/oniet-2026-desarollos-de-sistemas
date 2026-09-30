@@ -7,6 +7,8 @@ notebooks que van a llevar.
 ## Cómo hacer un simulacro
 
 1. Crear un repositorio nuevo de práctica (por ejemplo `simulacro-1`) y clonarlo los 3.
+   Copiar el archivo de la práctica de `data/practica/` a `data/ejemplos/` (la pantalla Importar
+   solo lista esa carpeta) y borrar los de ventas.
 2. Poner el cronómetro en 2:30 y arrancar como si fueran las 14:00.
 3. Uno lee la consigna en voz alta; se completa el análisis con `/analizar-consigna`.
 4. Seguir el plan del día al pie de la letra (roles, commits, cortes de tiempo).
@@ -24,13 +26,14 @@ notebooks que van a llevar.
 
 ## Así fueron las consignas reales de ONIET
 
-Encontradas en repositorios públicos de participantes (enunciados oficiales en PDF):
+Encontradas en repositorios públicos de participantes (enunciados oficiales en PDF o Word; la de
+2023 se deduce del código de un participante porque no se encontró el enunciado):
 
 | Año | Tema | Datos | Qué pedía |
 |---|---|---|---|
 | 2020 | COVID-19 por país | API pública (JSON) | Login con fecha de último acceso (30 %), configuración de usuario (40 %), dashboard con casos e históricos de 10 días (30 %) |
-| 2021 | ONG que asigna paquetes de ayuda a barrios populares | CSV de datos.gob.ar | Login (5 %), listado filtrado por provincia y localidad (25 %), detalle (20 %), asignar paquetes (10 %), sumatorias por localidad y provincia (20 %), top N con menor proporción paquetes/familia y desempate al azar (20 %) |
-| 2023 | Control de calidad de producción (según repos de participantes) | JSON | Registros por empresa y mes con piezas fallidas |
+| 2021 | ONG que asigna paquetes de ayuda a barrios populares | Dataset de datos.gob.ar (Registro Nacional de Barrios Populares) | Login (5 %), listado filtrado por provincia y localidad (25 %), detalle (20 %), asignar paquetes (10 %), sumatorias por localidad y provincia (20 %), los N barrios con menor proporción paquetes/familia; si hay muchos en la misma condición, se eligen N al azar (20 %) |
+| 2023 | Control de calidad de producción (deducido del código de un participante) | JSON | Registros por empresa y mes con piezas fallidas |
 | 2025 | Taller mecánico y compañías de seguro | CSV **y** JSON (con BOM y números como texto) | Ranking de compañías por total de cobertura; ranking de regiones por servicios |
 
 Lo que se repite: **leer CSV/JSON (a veces una API), validar, guardar, filtrar, ver detalle,
@@ -100,7 +103,8 @@ Columnas: `NumeroRegistro`, `CompaniaSeguro`, `Anio`, `Mes`, `CantidadServicios`
 Trampas (como en la consigna real): el JSON viene con BOM y **todos los valores como texto**; el
 porcentaje es un entero (`88` significa 88 %).
 
-1. Importar ambos archivos a la base, sin duplicar registros (`NumeroRegistro` es único).
+1. Importar ambos archivos a la base, sin duplicar registros (`NumeroRegistro` es único: usar
+   `CLAVE_UNICA` en `validacion.py` y `UNIQUE` en `schema.sql`).
 2. **Facturado** = `CantidadServicios × ValorPorServicio`; **total de cobertura** = facturado ×
    `PorcentajeCobertura` / 100.
 3. **Reporte 1**: ranking de compañías por total de cobertura, de mayor a menor.
@@ -120,7 +124,12 @@ Columnas: `id_barrio`, `nombre_barrio`, `provincia`, `localidad`, `cantidad_fami
    `asignaciones` relacionada con el barrio.
 5. Sumatorias de familias y de paquetes por localidad y por provincia.
 6. Los **N barrios con menor proporción paquetes/familias** (N lo elige el usuario); si hay empate,
-   se desempata al azar.
+   se desempata al azar (pista: `primeros_n()` de `procesamiento.py`, testeado con
+   `random.Random(semilla)`).
+
+> Para practicar con los **datos reales** de la consigna 2021: el dataset "Registro Nacional de
+> Barrios Populares" de datos.gob.ar (CSV de ~6.500 barrios). Ahí las columnas se llaman
+> `id_renabap` y `cantidad_familias_aproximada`: agregarlas a `ALIAS` en `validacion.py`.
 
 > Esta práctica ejercita **dos entidades relacionadas** (barrios y asignaciones): seguir
 > "Si el problema tiene más de una entidad" en `05_ADAPTAR_PLANTILLA.md`.

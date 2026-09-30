@@ -24,12 +24,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest # las PCs del laboratorio probablemente sean Windows
-            python-version: "3.12"
+          - os: windows-latest # las notebooks del equipo son Windows
+            python-version: "3.13" # la versión recomendada en docs/02
           - os: ubuntu-latest
             python-version: "3.10" # por si el laboratorio tiene un Python viejo
           - os: ubuntu-latest
-            python-version: "3.13"
+            python-version: "3.12"
 
     steps:
       - name: Descargar el código

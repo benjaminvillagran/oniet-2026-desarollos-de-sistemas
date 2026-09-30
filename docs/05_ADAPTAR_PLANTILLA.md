@@ -25,7 +25,7 @@ se reemplaza "ventas" por el problema real. Con IA: `/adaptar-plantilla` despué
 | 6 | `app/rutas/*.py` | Páginas y parámetros | Todas las páginas cargan |
 | 7 | `app/templates/*.html` | Columnas, formularios, KPIs, gráficos, menú | `/probar-en-navegador` |
 | 8 | `data/ejemplos/` | Archivos de la consigna | Aparecen en la pantalla Importar |
-| 9 | `app/config.py` | `NOMBRE_SISTEMA`, `NOMBRE_EQUIPO` | Se ve en el encabezado |
+| 9 | `app/config.py` | `NOMBRE_SISTEMA`, `NOMBRE_EQUIPO`, `LOGIN_OBLIGATORIO` | Se ve en el encabezado |
 | 10 | `tests/` | Datos de prueba del problema nuevo | `python herramientas/verificar.py` |
 
 **Reemplazar, no duplicar.** La entidad principal ocupa el lugar de "ventas": renombrar los
@@ -63,13 +63,91 @@ python herramientas/verificar.py. No cambies lector.py ni conversiones.py.
 
 ## Si el problema tiene más de una entidad
 
-Ejemplo: alumnos y notas, productos y ventas, equipos y partidos.
+Ejemplo: barrios y asignaciones de paquetes (consigna 2021), alumnos y notas, equipos y partidos.
+La entidad principal reemplaza a "ventas"; la otra se agrega copiando el patrón en archivos nuevos
+(`asignaciones_repositorio.py`, `asignaciones_servicio.py`, `asignaciones_rutas.py` con su `bp`,
+plantillas y tests). **Las rutas se registran solas**: no hay que tocar `app/__init__.py`.
 
-- Crear una tabla por entidad, relacionadas con `REFERENCES` (clave foránea).
-- Copiar el patrón completo por entidad: `<entidad>_repositorio.py`, `<entidad>_servicio.py`,
-  `<entidad>_rutas.py` (registrarla en `app/__init__.py`), plantillas y tests.
-- **Lo que se puede calcular no se guarda**: por ejemplo, la tabla de posiciones de un torneo se
-  calcula en `procesamiento.py` a partir de los partidos guardados.
+**1. Tablas relacionadas** (`schema.sql`). La tabla hija va después de la padre:
+
+```sql
+CREATE TABLE IF NOT EXISTS barrios (
+    id                INTEGER PRIMARY KEY,           -- el id que trae el archivo (único)
+    nombre_barrio     TEXT    NOT NULL,
+    provincia         TEXT    NOT NULL,
+    localidad         TEXT    NOT NULL,
+    cantidad_familias INTEGER NOT NULL CHECK (cantidad_familias > 0)
+);
+
+CREATE TABLE IF NOT EXISTS asignaciones (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    barrio_id INTEGER NOT NULL REFERENCES barrios (id) ON DELETE CASCADE,  -- si se borra el barrio, se borran sus asignaciones
+    fecha     TEXT    NOT NULL,
+    paquetes  INTEGER NOT NULL CHECK (paquetes > 0)
+);
+```
+
+`db.py` ya activa las claves foráneas (`PRAGMA foreign_keys = ON`). Como el id viene del archivo,
+poner `CLAVE_UNICA = "id_barrio"` (o el nombre que tenga) en `validacion.py`.
+
+**2. Listado del padre con un total del hijo** (repositorio):
+
+```python
+SQL_BARRIOS = """
+    SELECT b.*, COALESCE(SUM(a.paquetes), 0) AS paquetes
+    FROM barrios AS b
+    LEFT JOIN asignaciones AS a ON a.barrio_id = b.id
+    GROUP BY b.id
+"""
+```
+
+Para ordenar por la columna calculada, `COLUMNAS_ORDENABLES` puede ser un diccionario
+`{"paquetes": "paquetes", "familias": "b.cantidad_familias", ...}` (nombre en la URL → expresión SQL).
+
+**3. Detalle con las filas hijas y un formulario para agregar** (rutas):
+
+```python
+@bp.route("/<int:barrio_id>")
+def detalle(barrio_id):
+    barrio = barrios_repositorio.obtener_por_id(barrio_id) or abort(404)
+    return render_template(
+        "barrios_detalle.html",
+        barrio=barrio,
+        asignaciones=asignaciones_repositorio.del_barrio(barrio_id),
+        datos={},
+        errores={},
+    )
+
+
+@bp.route("/<int:barrio_id>/asignar", methods=["POST"])
+def asignar(barrio_id):
+    barrio = barrios_repositorio.obtener_por_id(barrio_id) or abort(404)
+    datos = request.form.to_dict()
+    errores = asignaciones_servicio.asignar(barrio_id, datos)  # valida y guarda en transacción
+    if not errores:
+        flash("Paquetes asignados.", "exito")
+        return redirect(url_for(".detalle", barrio_id=barrio_id))
+    return render_template(
+        "barrios_detalle.html",
+        barrio=barrio,  # se vuelve a mostrar con errores
+        asignaciones=asignaciones_repositorio.del_barrio(barrio_id),
+        datos=datos,
+        errores=errores,
+    )
+```
+
+**4. Ranking con desempate al azar** (procesamiento): calcular la proporción y usar
+`primeros_n(barrios, "proporcion", n, mayor_primero=False)`. En el test se pasa
+`azar=random.Random(1)` para que el resultado sea siempre el mismo.
+
+**5. Lo que se puede calcular no se guarda**: la proporción, la tabla de posiciones de un torneo o
+los totales por provincia se calculan en `procesamiento.py` a partir de lo guardado.
+
+## Si la consigna pide login
+
+`LOGIN_OBLIGATORIO = True` en `app/config.py`. Queda protegida toda página salvo ingresar y
+registrarse (la primera vez hay que crear un usuario en `/registrarse`). Los tests siguen corriendo
+sin login porque `tests/conftest.py` lo apaga; el login se prueba con la fixture `cliente_con_login`.
 
 ## Errores comunes al adaptar
 
