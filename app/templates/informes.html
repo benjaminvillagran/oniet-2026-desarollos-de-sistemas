@@ -19,6 +19,20 @@
 
 <section class="tarjeta">
     <h2>Seleccionar el período a analizar</h2>
+    {# Accesos rápidos: un botón por cada año que tiene datos (los años salen de periodos: AAAA-MM) #}
+    {% set anios = [] %}
+    {% for periodo in periodos %}
+        {% if periodo[:4] not in anios %}{% set _ = anios.append(periodo[:4]) %}{% endif %}
+    {% endfor %}
+    <div class="acciones">
+        <a class="boton boton--chico {{ '' if not filtros.activos else 'boton--secundario' }}"
+           href="{{ url_for('reportes.informes') }}">Todo el período</a>
+        {% for anio in anios %}
+            {% set elegido = filtros.desde == anio ~ '-01' and filtros.hasta == anio ~ '-12' %}
+            <a class="boton boton--chico {{ '' if elegido else 'boton--secundario' }}"
+               href="{{ url_for('reportes.informes', desde=anio ~ '-01', hasta=anio ~ '-12') }}">{{ anio }}</a>
+        {% endfor %}
+    </div>
     {{ filtros_servicios(filtros, periodos, operadores, regiones, url_for('reportes.informes')) }}
 </section>
 
