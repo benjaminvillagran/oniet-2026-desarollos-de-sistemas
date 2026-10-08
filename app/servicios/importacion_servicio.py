@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from app.db import transaccion
-from app.repositorios import importaciones_repositorio, ventas_repositorio
+from app.repositorios import importaciones_repositorio, servicios_repositorio
 from app.servicios import lector, procesamiento, validacion
 from app.servicios.lector import ErrorLectura
 from app.servicios.validacion import ErrorValidacion
@@ -77,19 +77,19 @@ def importar_archivo(
     # 3. PROCESAR: agrega los campos calculados de cada fila.
     #    Si el problema no tiene campos calculados por fila, este paso se omite: los cálculos
     #    agregados (rankings, tablas de posiciones, totales) se hacen al consultar.
-    ventas = [procesamiento.completar_venta(venta) for venta in resultado.validos]
+    servicios = [procesamiento.completar_servicio(servicio) for servicio in resultado.validos]
 
     # 4. GUARDAR: todo junto en una transacción (si algo falla, no se guarda nada)
     with transaccion():
         importacion_id = importaciones_repositorio.registrar(
-            nombre_archivo, len(filas), len(ventas), resultado.filas_con_error, huella
+            nombre_archivo, len(filas), len(servicios), resultado.filas_con_error, huella
         )
-        ventas_repositorio.insertar_varias(ventas, importacion_id)
+        servicios_repositorio.insertar_varias(servicios, importacion_id)
 
     return ResumenImportacion(
         nombre_archivo=nombre_archivo,
         filas_leidas=len(filas),
-        filas_guardadas=len(ventas),
+        filas_guardadas=len(servicios),
         errores=resultado.errores,
         importacion_id=importacion_id,
     )
@@ -103,7 +103,7 @@ def importar_desde_url(url: str, limite_bytes: int, forzar: bool = False) -> Res
 
 def _quitar_claves_repetidas(resultado: validacion.ResultadoValidacion, campo: str) -> None:
     """Pasa a errores las filas cuya clave única ya existe en la base o se repite en el archivo."""
-    guardados = ventas_repositorio.valores_de(campo)
+    guardados = servicios_repositorio.valores_de(campo)
     primera_fila: dict[Any, int] = {}
     validos, filas_validas = [], []
     for registro, numero in zip(resultado.validos, resultado.filas_validas, strict=True):

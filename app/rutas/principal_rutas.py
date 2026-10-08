@@ -10,11 +10,11 @@ bp = Blueprint("principal", __name__)
 
 @bp.route("/")
 def inicio():
-    estadisticas = reportes_servicio.obtener_estadisticas()
+    informes = reportes_servicio.obtener_informes()
     return render_template(
         "inicio.html",
-        resumen=estadisticas["resumen"],
-        por_categoria=estadisticas["por_categoria"][:5],
+        resumen=informes["resumen"],
+        operadores=informes["operadores"],
         importaciones=importaciones_repositorio.listar_recientes(5),
     )
 

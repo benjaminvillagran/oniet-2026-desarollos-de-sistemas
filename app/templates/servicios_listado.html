@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% from "_macros.html" import filtros_servicios, encabezado_ordenable, paginacion %}
+{% block titulo %}Servicios{% endblock %}
+{% block contenido %}
+<section class="encabezado">
+    <div>
+        <h1>Servicios</h1>
+        <p class="texto-suave">{{ total | numero }} {{ 'registro' if total == 1 else 'registros' }}{{ ' con los filtros aplicados' if filtros.activos }}.</p>
+    </div>
+    <div class="acciones">
+        <a class="boton boton--secundario" href="{{ url_for('reportes.exportar', **filtros.como_diccionario()) }}">Exportar CSV</a>
+    </div>
+</section>
+
+<section class="tarjeta">
+    {{ filtros_servicios(filtros, periodos, operadores, regiones, url_for('servicios.listado')) }}
+</section>
+
+<section class="tarjeta">
+    {% if servicios %}
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    {{ encabezado_ordenable('numero_registro', 'N.º', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('operador_logistico', 'Operador', orden, direccion, filtros) }}
+                    {{ encabezado_ordenable('anio', 'Año', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('mes', 'Mes', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('region', 'Región', orden, direccion, filtros) }}
+                    {{ encabezado_ordenable('cantidad_envios', 'Envíos', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('costo_por_envio', 'Costo por envío', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('costo_total', 'Costo total', orden, direccion, filtros, 'numero') }}
+                    {{ encabezado_ordenable('porcentaje_entregas_atiempo', 'A tiempo', orden, direccion, filtros, 'numero') }}
+                    <th class="sin-imprimir"></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for servicio in servicios %}
+                <tr>
+                    <td class="numero">{{ servicio.numero_registro }}</td>
+                    <td><a href="{{ url_for('servicios.detalle', servicio_id=servicio.id) }}">{{ servicio.operador_logistico }}</a></td>
+                    <td class="numero">{{ servicio.anio }}</td>
+                    <td class="numero">{{ servicio.mes }}</td>
+                    <td><span class="etiqueta">{{ servicio.region }}</span></td>
+                    <td class="numero">{{ servicio.cantidad_envios | numero }}</td>
+                    <td class="numero">{{ servicio.costo_por_envio | moneda }}</td>
+                    <td class="numero"><strong>{{ servicio.costo_total | moneda }}</strong></td>
+                    <td class="numero">{{ servicio.porcentaje_entregas_atiempo | porcentaje }}</td>
+                    <td class="sin-imprimir">
+                        <form method="post" action="{{ url_for('servicios.eliminar', servicio_id=servicio.id) }}"
+                              data-confirmar="¿Eliminar el registro #{{ servicio.numero_registro }}?">
+                            <button class="boton boton--peligro boton--chico" type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="fila-total">
+                    <td colspan="5">Total{{ ' filtrado' if filtros.activos }} ({{ totales.registros | numero }} registros)</td>
+                    <td class="numero">{{ totales.envios | numero }}</td>
+                    <td></td>
+                    <td class="numero">{{ totales.costo_total | moneda }}</td>
+                    <td></td>
+                    <td class="sin-imprimir"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% set parametros = dict(filtros.como_diccionario(), orden=orden, direccion=direccion) %}
+    {{ paginacion(pagina, paginas, parametros) }}
+    {% else %}
+        <div class="vacio">
+            {% if filtros.activos %}
+                <p>No hay registros que coincidan con los filtros.</p>
+                <a class="boton boton--secundario" href="{{ url_for('servicios.listado') }}">Limpiar filtros</a>
+            {% else %}
+                <p>Todavía no hay servicios cargados.</p>
+                <a class="boton" href="{{ url_for('importacion.importar') }}">Importar datos</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+
+{% if total > 0 and not filtros.activos %}
+<section class="zona-peligro">
+    <form method="post" action="{{ url_for('servicios.vaciar') }}"
+          data-confirmar="Se van a borrar TODOS los servicios y el historial. ¿Continuar?">
+        <button class="boton boton--peligro boton--chico" type="submit">Vaciar todos los datos</button>
+    </form>
+</section>
+{% endif %}
+{% endblock %}

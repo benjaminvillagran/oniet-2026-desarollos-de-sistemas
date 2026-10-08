@@ -8,32 +8,47 @@
 </div>
 {% endmacro %}
 
-{# Formulario de filtros del ejemplo de ventas (búsqueda, categoría y fechas): adaptarlo al problema #}
-{% macro filtros_ventas(filtros, categorias, destino) %}
+{# Filtros de servicios: período (desde/hasta mes y año), operador y región #}
+{% macro filtros_servicios(filtros, periodos, operadores, regiones, destino) %}
 <form class="filtros" method="get" action="{{ destino }}">
     <div class="campo">
-        <label for="busqueda">Buscar</label>
-        <input id="busqueda" name="busqueda" type="search" value="{{ filtros.busqueda }}" placeholder="Producto o categoría">
-    </div>
-    <div class="campo">
-        <label for="categoria">Categoría</label>
-        <select id="categoria" name="categoria">
-            <option value="">Todas</option>
-            {% for categoria in categorias %}
-                <option value="{{ categoria }}" {{ 'selected' if categoria == filtros.categoria }}>{{ categoria }}</option>
+        <label for="desde">Desde (mes/año)</label>
+        <select id="desde" name="desde">
+            <option value="">El primero</option>
+            {% for periodo in periodos %}
+                <option value="{{ periodo }}" {{ 'selected' if periodo == filtros.desde }}>{{ periodo | mes }}</option>
             {% endfor %}
         </select>
     </div>
     <div class="campo">
-        <label for="desde">Desde</label>
-        <input id="desde" name="desde" type="date" value="{{ filtros.desde }}">
+        <label for="hasta">Hasta (mes/año)</label>
+        <select id="hasta" name="hasta">
+            <option value="">El último</option>
+            {% for periodo in periodos %}
+                <option value="{{ periodo }}" {{ 'selected' if periodo == filtros.hasta }}>{{ periodo | mes }}</option>
+            {% endfor %}
+        </select>
     </div>
     <div class="campo">
-        <label for="hasta">Hasta</label>
-        <input id="hasta" name="hasta" type="date" value="{{ filtros.hasta }}">
+        <label for="operador">Operador</label>
+        <select id="operador" name="operador">
+            <option value="">Todos</option>
+            {% for operador in operadores %}
+                <option value="{{ operador }}" {{ 'selected' if operador == filtros.operador }}>{{ operador }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="campo">
+        <label for="region">Región</label>
+        <select id="region" name="region">
+            <option value="">Todas</option>
+            {% for region in regiones %}
+                <option value="{{ region }}" {{ 'selected' if region == filtros.region }}>{{ region }}</option>
+            {% endfor %}
+        </select>
     </div>
     <div class="filtros__acciones">
-        <button class="boton" type="submit">Filtrar</button>
+        <button class="boton" type="submit">Aplicar</button>
         {% if filtros.activos %}<a class="boton boton--secundario" href="{{ destino }}">Limpiar</a>{% endif %}
     </div>
 </form>

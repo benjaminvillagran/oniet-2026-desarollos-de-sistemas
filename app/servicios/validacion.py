@@ -1,54 +1,72 @@
-"""PASO 2 - VALIDACIÓN de los datos de VENTAS (específico del problema).
+"""PASO 2 - VALIDACIÓN de los registros de SERVICIOS logísticos.
 
-Al adaptar la plantilla a la consigna, este es uno de los primeros archivos a cambiar:
-  1. COLUMNAS: qué columnas trae el archivo (se usan para validar y para la ayuda en pantalla).
-  2. ALIAS: otros nombres con los que puede venir una columna.
-  3. validar_venta(): las reglas de cada campo.
+1. COLUMNAS: qué columnas trae el archivo (se usan para validar y para la ayuda en pantalla).
+2. ALIAS: otros nombres con los que puede venir una columna.
+3. validar_servicio(): las reglas de cada campo.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from app.servicios.lector import VALORES_DE_MAS, FilaLeida
-from app.utils.conversiones import (
-    a_decimal,
-    a_entero,
-    a_fecha,
-    es_vacio,
-    normalizar_texto,
-    redondear_dinero,
-)
+from app.utils.conversiones import a_decimal, a_entero, es_vacio, normalizar_texto, redondear_dinero
 
 COLUMNAS = [
-    {"campo": "fecha", "descripcion": "Fecha de la venta", "ejemplo": "15/03/2026"},
-    {"campo": "producto", "descripcion": "Nombre del producto", "ejemplo": "Alfajor triple"},
-    {"campo": "categoria", "descripcion": "Rubro del producto", "ejemplo": "Kiosco"},
-    {"campo": "cantidad", "descripcion": "Unidades vendidas (entero mayor a 0)", "ejemplo": "3"},
     {
-        "campo": "precio_unitario",
-        "descripcion": "Precio por unidad (0 o más)",
-        "ejemplo": "1250,50",
+        "campo": "numero_registro",
+        "descripcion": "Número correlativo del servicio (único)",
+        "ejemplo": "1",
+    },
+    {
+        "campo": "operador_logistico",
+        "descripcion": "Empresa que realizó los envíos",
+        "ejemplo": "LogisticaSur",
+    },
+    {"campo": "anio", "descripcion": "Año de los servicios", "ejemplo": "2024"},
+    {"campo": "mes", "descripcion": "Mes (1 a 12)", "ejemplo": "1"},
+    {
+        "campo": "cantidad_envios",
+        "descripcion": "Cantidad de envíos (entero, 0 o más)",
+        "ejemplo": "314",
+    },
+    {"campo": "region", "descripcion": "Región de los servicios", "ejemplo": "Centro"},
+    {
+        "campo": "costo_por_envio",
+        "descripcion": "Costo de cada envío (0 o más)",
+        "ejemplo": "2707.33",
+    },
+    {
+        "campo": "porcentaje_entregas_atiempo",
+        "descripcion": "% de envíos entregados a tiempo (0 a 100)",
+        "ejemplo": "73",
     },
 ]
 
+# El lector convierte "PorcentajeEntregasATiempo" en "porcentaje_entregas_atiempo".
 ALIAS = {
-    "fecha_venta": "fecha",
-    "articulo": "producto",
-    "rubro": "categoria",
-    "cant": "cantidad",
-    "unidades": "cantidad",
-    "precio": "precio_unitario",
-    "precio_unit": "precio_unitario",
+    "porcentaje_entregas_a_tiempo": "porcentaje_entregas_atiempo",
+    "operador": "operador_logistico",
+    "ano": "anio",
+    "envios": "cantidad_envios",
 }
 
 LARGO_MAXIMO_TEXTO = 100
 
-# Si la consigna dice que un campo no se puede repetir ("NumeroRegistro es único"), poner acá su
-# nombre (ej.: CLAVE_UNICA = "numero_registro"). La importación rechaza los valores repetidos, en
-# el archivo o ya guardados, e informa fila y motivo. En el ejemplo de ventas no hay clave única.
-CLAVE_UNICA: str | None = None
+# La consigna dice que NumeroRegistro es un número correlativo: no se puede repetir.
+CLAVE_UNICA: str | None = "numero_registro"
+
+# campo -> (función que convierte, mínimo, máximo o None si no tiene)
+REGLAS_NUMERICAS: dict[str, tuple[Callable[[Any], float], float, float | None]] = {
+    "numero_registro": (a_entero, 1, None),
+    "anio": (a_entero, 2000, 2100),
+    "mes": (a_entero, 1, 12),
+    "cantidad_envios": (a_entero, 0, None),
+    "costo_por_envio": (a_decimal, 0, None),
+    "porcentaje_entregas_atiempo": (a_decimal, 0, 100),
+}
+CAMPOS_TEXTO = ("operador_logistico", "region")
 
 
 @dataclass
@@ -81,63 +99,51 @@ def columnas_faltantes(filas: list[FilaLeida]) -> list[str]:
     return [columna["campo"] for columna in COLUMNAS if columna["campo"] not in presentes]
 
 
-def validar_venta(datos: dict[str, Any]) -> tuple[dict[str, Any] | None, dict[str, str]]:
-    """Valida UNA venta.
+def validar_numero(valor: Any, convertir: Callable, minimo: float, maximo: float | None):
+    """Convierte un valor y revisa su rango. Devuelve (numero, None) o (None, mensaje)."""
+    try:
+        numero = convertir(valor)
+    except ValueError as error:
+        return None, str(error)
+    if numero < minimo or (maximo is not None and numero > maximo):
+        if maximo is None:
+            return None, f"Debe ser {minimo} o más."
+        return None, f"Debe estar entre {minimo} y {maximo}."
+    return numero, None
 
-    Devuelve (venta_limpia, {}) si está todo bien, o (None, {campo: mensaje}) si hay errores.
-    """
+
+def validar_servicio(datos: dict[str, Any]) -> tuple[dict[str, Any] | None, dict[str, str]]:
+    """Valida UN servicio. Devuelve (servicio_limpio, {}) o (None, {campo: mensaje})."""
     datos = aplicar_alias(datos)
     errores: dict[str, str] = {}
-    venta: dict[str, Any] = {}
+    servicio: dict[str, Any] = {}
 
     for columna in COLUMNAS:
         if es_vacio(datos.get(columna["campo"])):
             errores[columna["campo"]] = "Es obligatorio."
 
-    if "fecha" not in errores:
-        try:
-            venta["fecha"] = a_fecha(datos["fecha"]).isoformat()
-        except ValueError as error:
-            errores["fecha"] = str(error)
-
-    for campo in ("producto", "categoria"):
+    for campo in CAMPOS_TEXTO:
         if campo not in errores:
             texto = normalizar_texto(datos[campo])
             if len(texto) > LARGO_MAXIMO_TEXTO:
                 errores[campo] = f"No puede superar {LARGO_MAXIMO_TEXTO} caracteres."
             else:
-                venta[campo] = texto[0].upper() + texto[1:]
+                servicio[campo] = texto
 
-    if "categoria" in venta:
-        venta["categoria"] = venta["categoria"].capitalize()  # 'KIOSCO' y 'kiosco' -> 'Kiosco'
-
-    if "cantidad" not in errores:
-        try:
-            cantidad = a_entero(datos["cantidad"])
-            if cantidad <= 0:
-                errores["cantidad"] = "Debe ser mayor a 0."
+    for campo, (convertir, minimo, maximo) in REGLAS_NUMERICAS.items():
+        if campo not in errores:
+            numero, mensaje = validar_numero(datos[campo], convertir, minimo, maximo)
+            if mensaje:
+                errores[campo] = mensaje
             else:
-                venta["cantidad"] = cantidad
-        except ValueError as error:
-            errores["cantidad"] = str(error)
+                servicio[campo] = numero
 
-    if "precio_unitario" not in errores:
-        try:
-            precio = a_decimal(datos["precio_unitario"])
-            if precio < 0:
-                errores["precio_unitario"] = "No puede ser negativo."
-            else:
-                venta["precio_unitario"] = redondear_dinero(precio)
-        except ValueError as error:
-            errores["precio_unitario"] = str(error)
-
-    # Reglas entre campos van acá, cuando los dos campos ya son válidos. Ejemplo (torneo):
-    #     if "local" in venta and venta["local"] == venta.get("visitante"):
-    #         errores["visitante"] = "Un equipo no puede jugar contra sí mismo."
+    if "costo_por_envio" in servicio:
+        servicio["costo_por_envio"] = redondear_dinero(servicio["costo_por_envio"])
 
     if errores:
         return None, errores
-    return venta, {}
+    return servicio, {}
 
 
 def validar_filas(filas: list[FilaLeida]) -> ResultadoValidacion:
@@ -153,13 +159,13 @@ def validar_filas(filas: list[FilaLeida]) -> ResultadoValidacion:
                 )
             )
             continue
-        venta, errores = validar_venta(fila.datos)
+        servicio, errores = validar_servicio(fila.datos)
         if errores:
             resultado.errores.extend(
                 ErrorValidacion(fila=fila.numero, campo=campo, mensaje=mensaje)
                 for campo, mensaje in errores.items()
             )
         else:
-            resultado.validos.append(venta)
+            resultado.validos.append(servicio)
             resultado.filas_validas.append(fila.numero)
     return resultado

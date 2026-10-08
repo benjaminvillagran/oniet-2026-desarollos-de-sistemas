@@ -14,9 +14,8 @@
                 {% set seccion = request.endpoint or '' %}
                 <a href="{{ url_for('principal.inicio') }}" class="{{ 'activo' if seccion == 'principal.inicio' }}">Inicio</a>
                 <a href="{{ url_for('importacion.importar') }}" class="{{ 'activo' if seccion == 'importacion.importar' }}">Importar</a>
-                <a href="{{ url_for('ventas.listado') }}" class="{{ 'activo' if seccion == 'ventas.listado' }}">Ventas</a>
-                <a href="{{ url_for('ventas.nueva') }}" class="{{ 'activo' if seccion == 'ventas.nueva' }}">Nueva venta</a>
-                <a href="{{ url_for('reportes.estadisticas') }}" class="{{ 'activo' if seccion == 'reportes.estadisticas' }}">Estadísticas</a>
+                <a href="{{ url_for('servicios.listado') }}" class="{{ 'activo' if seccion == 'servicios.listado' }}">Servicios</a>
+                <a href="{{ url_for('reportes.informes') }}" class="{{ 'activo' if seccion == 'reportes.informes' }}">Informes</a>
                 <a href="{{ url_for('importacion.historial') }}" class="{{ 'activo' if seccion == 'importacion.historial' }}">Historial</a>
                 {% if usuario_actual %}
                     <a href="{{ url_for('autenticacion.cuenta') }}" class="{{ 'activo' if seccion == 'autenticacion.cuenta' }}">👤 {{ usuario_actual.nombre_usuario }}</a>

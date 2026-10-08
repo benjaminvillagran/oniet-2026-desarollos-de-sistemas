@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% from "_macros.html" import kpi, filtros_servicios %}
+{% block titulo %}Informes{% endblock %}
+{% block contenido %}
+{% set resumen = datos.resumen %}
+<section class="encabezado">
+    <div>
+        <h1>Informes</h1>
+        <p class="texto-suave">
+            Período: {{ (filtros.desde | mes) if filtros.desde else 'desde el inicio' }}
+            a {{ (filtros.hasta | mes) if filtros.hasta else 'el último mes cargado' }}{{ ' (con filtros)' if filtros.operador or filtros.region }}.
+        </p>
+    </div>
+    <div class="acciones">
+        <a class="boton boton--secundario" href="{{ url_for('reportes.exportar', **filtros.como_diccionario()) }}">Exportar CSV</a>
+        <a class="boton boton--secundario" href="{{ url_for('api.informes', **filtros.como_diccionario()) }}">Ver JSON</a>
+    </div>
+</section>
+
+<section class="tarjeta">
+    <h2>Seleccionar el período a analizar</h2>
+    {{ filtros_servicios(filtros, periodos, operadores, regiones, url_for('reportes.informes')) }}
+</section>
+
+{% if not resumen.registros %}
+    <div class="tarjeta vacio">
+        <p>No hay servicios {{ 'en ese período' if filtros.activos else 'cargados todavía' }}.</p>
+        <a class="boton" href="{{ url_for('importacion.importar') }}">Importar datos</a>
+    </div>
+{% else %}
+    <section class="grilla-kpi">
+        {{ kpi('Registros', resumen.registros | numero) }}
+        {{ kpi('Total de envíos', resumen.total_envios | numero) }}
+        {{ kpi('Costo total', resumen.costo_total | moneda) }}
+        {{ kpi('Promedio entregas a tiempo', resumen.promedio_a_tiempo | porcentaje) }}
+    </section>
+
+    <section class="tarjeta">
+        <h2>Reporte 1 — Ranking de operadores</h2>
+        <p class="texto-suave">De mayor a menor costo total. Costo total = CantidadEnvios × CostoPorEnvio, acumulado en el período.</p>
+        <div class="grafico"><canvas id="grafico-operadores" aria-label="Gráfico de costo total por operador"></canvas></div>
+        <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead><tr><th class="numero">Posición</th><th>Operador</th><th class="numero">Total envíos</th><th class="numero">Costo total</th></tr></thead>
+            <tbody>
+            {% for fila in datos.operadores %}
+                <tr>
+                    <td class="numero">{{ fila.posicion }}</td>
+                    <td>{{ fila.operador }}</td>
+                    <td class="numero">{{ fila.total_envios | numero }}</td>
+                    <td class="numero">{{ fila.costo_total | moneda }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </section>
+
+    <div class="grilla-2">
+        <section class="tarjeta">
+            <h2>Reporte 2 — Ranking de regiones</h2>
+            <p class="texto-suave">De mayor a menor cantidad de envíos.</p>
+            <div class="grafico"><canvas id="grafico-regiones" aria-label="Gráfico de envíos por región"></canvas></div>
+            <table class="tabla">
+                <thead><tr><th class="numero">Posición</th><th>Región</th><th class="numero">Cantidad de envíos</th></tr></thead>
+                <tbody>
+                {% for fila in datos.regiones %}
+                    <tr>
+                        <td class="numero">{{ fila.posicion }}</td>
+                        <td>{{ fila.region }}</td>
+                        <td class="numero">{{ fila.cantidad_envios | numero }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="tarjeta">
+            <h2>Reporte 3 — Nivel de cumplimiento</h2>
+            <p class="texto-suave">Promedio de entregas a tiempo de cada operador, de mayor a menor. En empate, misma posición.</p>
+            <div class="grafico"><canvas id="grafico-cumplimiento" aria-label="Gráfico de cumplimiento por operador"></canvas></div>
+            <table class="tabla">
+                <thead><tr><th class="numero">Posición</th><th>Operador</th><th class="numero">Promedio entregas a tiempo</th></tr></thead>
+                <tbody>
+                {% for fila in datos.cumplimiento %}
+                    <tr>
+                        <td class="numero">{{ fila.posicion }}</td>
+                        <td>{{ fila.operador }}</td>
+                        <td class="numero">{{ fila.promedio | numero(2) }} %</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    {# Lista de gráficos: cada uno necesita un <canvas> con el mismo id (ver static/js/graficos.js) #}
+    {% set datos_graficos = [
+        {
+            "id": "grafico-operadores", "tipo": "bar", "titulo": "Costo total", "formato": "moneda",
+            "etiquetas": datos.operadores | map(attribute="operador") | list,
+            "valores": datos.operadores | map(attribute="costo_total") | list
+        },
+        {
+            "id": "grafico-regiones", "tipo": "bar", "titulo": "Envíos", "formato": "numero",
+            "etiquetas": datos.regiones | map(attribute="region") | list,
+            "valores": datos.regiones | map(attribute="cantidad_envios") | list
+        },
+        {
+            "id": "grafico-cumplimiento", "tipo": "bar", "titulo": "% a tiempo", "formato": "numero",
+            "etiquetas": datos.cumplimiento | map(attribute="operador") | list,
+            "valores": datos.cumplimiento | map(attribute="promedio") | list
+        }
+    ] %}
+    <script id="datos-graficos" type="application/json">{{ datos_graficos | tojson }}</script>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if datos.resumen.registros %}
+{# Chart.js 4.4.4 (licencia MIT) incluido en el proyecto: funciona sin internet #}
+<script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='js/graficos.js') }}"></script>
+{% endif %}
+{% endblock %}
