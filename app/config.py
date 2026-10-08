@@ -31,8 +31,7 @@ def _clave_secreta() -> str:
 class Config:
     # Datos que se muestran en la interfaz (cambiarlos el día de la competencia)
     NOMBRE_SISTEMA = "Logística Nacional · Análisis de servicios"
-    NOMBRE_EQUIPO = "Equipo ONIET 2026"
-
+    NOMBRE_EQUIPO = "Equipo 14 · Arena, Tapia, Villagrán"
     # Login: False = el sistema se usa sin usuarios. Cambiar a True si la consigna pide iniciar sesión.
     LOGIN_OBLIGATORIO = False
 
