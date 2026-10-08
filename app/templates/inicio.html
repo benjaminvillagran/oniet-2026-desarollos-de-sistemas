@@ -5,50 +5,51 @@
 <section class="encabezado">
     <div>
         <h1>{{ nombre_sistema }}</h1>
-        <p class="texto-suave">Importá un archivo de ventas, el sistema lo valida, calcula los resultados y los guarda para consultarlos.</p>
+        <p class="texto-suave">Importá el archivo de servicios logísticos (CSV o JSON): el sistema lo valida, calcula el costo total, lo guarda y genera los 3 informes.</p>
     </div>
     <a class="boton" href="{{ url_for('importacion.importar') }}">Importar archivo</a>
 </section>
 
 <ol class="pasos">
     <li><strong>1. Leer</strong><span>Archivos CSV, JSON o Excel, o carga manual.</span></li>
-    <li><strong>2. Procesar</strong><span>Validación fila por fila y cálculo de totales.</span></li>
+    <li><strong>2. Procesar</strong><span>Validación fila por fila y cálculo del costo total.</span></li>
     <li><strong>3. Guardar</strong><span>Base de datos SQLite con historial de cargas.</span></li>
-    <li><strong>4. Mostrar</strong><span>Listados, filtros, estadísticas, gráficos y exportación.</span></li>
+    <li><strong>4. Mostrar</strong><span>Informes por período, gráficos, filtros y exportación.</span></li>
 </ol>
 
-{% if resumen.cantidad_ventas == 0 %}
+{% if resumen.registros == 0 %}
     <div class="tarjeta vacio">
         <h2>Todavía no hay datos cargados</h2>
         <p>Empezá importando un archivo. Si no tenés uno, usá el de ejemplo.</p>
         <p>
             <a class="boton" href="{{ url_for('importacion.importar') }}">Importar datos</a>
-            <a class="boton boton--secundario" href="{{ url_for('principal.descargar_ejemplo', nombre='ventas_ejemplo.csv') }}">Descargar ejemplo</a>
+            <a class="boton boton--secundario" href="{{ url_for('principal.descargar_ejemplo', nombre='ONIET-2026-Logistica.csv') }}">Descargar ejemplo</a>
         </p>
     </div>
 {% else %}
     <section class="grilla-kpi">
-        {{ kpi('Ventas registradas', resumen.cantidad_ventas | numero) }}
-        {{ kpi('Unidades vendidas', resumen.unidades | numero) }}
-        {{ kpi('Facturación total', resumen.facturacion_total | moneda) }}
-        {{ kpi('Ticket promedio', resumen.ticket_promedio | moneda) }}
+        {{ kpi('Registros', resumen.registros | numero) }}
+        {{ kpi('Total de envíos', resumen.total_envios | numero) }}
+        {{ kpi('Costo total', resumen.costo_total | moneda) }}
+        {{ kpi('Promedio entregas a tiempo', resumen.promedio_a_tiempo | porcentaje) }}
     </section>
 
     <div class="grilla-2">
         <section class="tarjeta">
-            <h2>Categorías que más facturan</h2>
+            <h2>Ranking de operadores (todo el período)</h2>
             <table class="tabla">
+                <thead><tr><th class="numero">Posición</th><th>Operador</th><th class="numero">Costo total</th></tr></thead>
                 <tbody>
-                {% for grupo in por_categoria %}
+                {% for fila in operadores %}
                     <tr>
-                        <td>{{ grupo.nombre }}</td>
-                        <td class="numero">{{ grupo.valor | moneda }}</td>
-                        <td class="columna-barra"><div class="barra"><span style="width: {{ grupo.porcentaje }}%"></span></div></td>
+                        <td class="numero">{{ fila.posicion }}</td>
+                        <td>{{ fila.operador }}</td>
+                        <td class="numero">{{ fila.costo_total | moneda }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <p><a href="{{ url_for('reportes.estadisticas') }}">Ver todas las estadísticas →</a></p>
+            <p><a href="{{ url_for('reportes.informes') }}">Ver los 3 informes y elegir el período →</a></p>
         </section>
 
         <section class="tarjeta">
@@ -67,7 +68,7 @@
                 </tbody>
             </table>
             {% else %}
-                <p class="texto-suave">Las ventas se cargaron a mano, no hay importaciones.</p>
+                <p class="texto-suave">Todavía no hay importaciones.</p>
             {% endif %}
         </section>
     </div>

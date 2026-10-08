@@ -13,20 +13,22 @@ CREATE TABLE IF NOT EXISTS importaciones (
     hash_contenido  TEXT                                   -- huella del archivo: detecta repetidos
 );
 
--- Datos del problema. En la plantilla: ventas de un comercio.
-CREATE TABLE IF NOT EXISTS ventas (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    fecha           TEXT    NOT NULL,                      -- formato AAAA-MM-DD
-    producto        TEXT    NOT NULL,
-    categoria       TEXT    NOT NULL,
-    cantidad        INTEGER NOT NULL CHECK (cantidad > 0),
-    precio_unitario REAL    NOT NULL CHECK (precio_unitario >= 0),
-    total           REAL    NOT NULL,                      -- calculado: cantidad * precio_unitario
-    importacion_id  INTEGER REFERENCES importaciones (id) ON DELETE SET NULL
+-- Datos del problema: servicios logísticos (consigna ONIET 2026 "Logística Nacional").
+CREATE TABLE IF NOT EXISTS servicios (
+    id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+    numero_registro             INTEGER NOT NULL UNIQUE,              -- correlativo del archivo
+    operador_logistico          TEXT    NOT NULL,
+    anio                        INTEGER NOT NULL,
+    mes                         INTEGER NOT NULL CHECK (mes BETWEEN 1 AND 12),
+    cantidad_envios             INTEGER NOT NULL CHECK (cantidad_envios >= 0),
+    region                      TEXT    NOT NULL,
+    costo_por_envio             REAL    NOT NULL CHECK (costo_por_envio >= 0),
+    porcentaje_entregas_atiempo REAL    NOT NULL CHECK (porcentaje_entregas_atiempo BETWEEN 0 AND 100),
+    costo_total                 REAL    NOT NULL,             -- calculado: cantidad_envios * costo_por_envio
+    importacion_id              INTEGER REFERENCES importaciones (id) ON DELETE SET NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_ventas_fecha ON ventas (fecha);
-CREATE INDEX IF NOT EXISTS idx_ventas_categoria ON ventas (categoria);
+CREATE INDEX IF NOT EXISTS idx_servicios_periodo ON servicios (anio, mes);
 
 -- Usuarios: solo se usan si la consigna pide login (LOGIN_OBLIGATORIO = True en config.py)
 CREATE TABLE IF NOT EXISTS usuarios (

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titulo %}Registro #{{ servicio.numero_registro }}{% endblock %}
+{% block contenido %}
+<section class="encabezado">
+    <div>
+        <p class="texto-suave"><a href="{{ url_for('servicios.listado') }}">← Volver a servicios</a></p>
+        <h1>{{ servicio.operador_logistico }}</h1>
+        <p class="texto-suave">Registro #{{ servicio.numero_registro }} · {{ ('%04d-%02d' % (servicio.anio, servicio.mes)) | mes }}</p>
+    </div>
+    <div class="acciones">
+        <form method="post" action="{{ url_for('servicios.eliminar', servicio_id=servicio.id) }}"
+              data-confirmar="¿Eliminar el registro #{{ servicio.numero_registro }}?">
+            <button class="boton boton--peligro" type="submit">Eliminar</button>
+        </form>
+    </div>
+</section>
+
+<section class="tarjeta formulario-angosto">
+    <dl class="ficha">
+        <dt>Número de registro</dt><dd>{{ servicio.numero_registro }}</dd>
+        <dt>Operador logístico</dt><dd>{{ servicio.operador_logistico }}</dd>
+        <dt>Período</dt><dd>{{ servicio.mes }}/{{ servicio.anio }}</dd>
+        <dt>Región</dt><dd><span class="etiqueta">{{ servicio.region }}</span></dd>
+        <dt>Cantidad de envíos</dt><dd>{{ servicio.cantidad_envios | numero }}</dd>
+        <dt>Costo por envío</dt><dd>{{ servicio.costo_por_envio | moneda }}</dd>
+        <dt>Costo total</dt><dd>{{ servicio.costo_total | moneda }} <span class="texto-suave">(envíos × costo por envío)</span></dd>
+        <dt>Entregas a tiempo</dt><dd>{{ servicio.porcentaje_entregas_atiempo | porcentaje }}</dd>
+        <dt>Origen</dt>
+        <dd>{{ 'Importación #' ~ servicio.importacion_id if servicio.importacion_id else '—' }}</dd>
+    </dl>
+</section>
+{% endblock %}

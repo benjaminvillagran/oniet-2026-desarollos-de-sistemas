@@ -1,0 +1,8 @@
+NumeroRegistro,OperadorLogistico,Anio,Mes,CantidadEnvios,Region,CostoPorEnvio,PorcentajeEntregasATiempo
+1,LogisticaSur,2024,1,314,Centro,2707.33,73
+2,TransRuta,2024,13,497,Litoral,3935.96,82
+3,,2024,1,223,Centro,4171.06,89
+4,CargaNacional,2024,2,-5,Centro,1808.67,86
+5,AndesLog,2024,2,476,Norte,abc,82
+6,EnvioExpress,2024,3,225,Centro,4462.3,150
+1,LogisticaSur,2024,3,212,Centro,1164.17,74

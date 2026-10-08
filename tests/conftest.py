@@ -7,10 +7,10 @@ import pytest
 from app import create_app
 
 CSV_VALIDO = (
-    "fecha;producto;categoria;cantidad;precio_unitario\n"
-    "15/03/2026;Alfajor;Kiosco;3;1200\n"
-    "16/03/2026;Agua;Bebidas;2;900,50\n"
-    "02/04/2026;Alfajor;kiosco;1;1200\n"
+    "NumeroRegistro,OperadorLogistico,Anio,Mes,CantidadEnvios,Region,CostoPorEnvio,PorcentajeEntregasATiempo\n"
+    "1,LogisticaSur,2024,1,10,Centro,100.5,80\n"
+    "2,TransRuta,2024,2,5,Norte,1000,90\n"
+    "3,LogisticaSur,2025,1,20,Norte,50,100\n"
 )
 
 
@@ -51,7 +51,7 @@ def cliente_con_login(tmp_path):
 def importar(cliente):
     """Sube un archivo a /importar/ como lo haría el navegador."""
 
-    def _importar(contenido, nombre="ventas.csv"):
+    def _importar(contenido, nombre="servicios.csv"):
         if isinstance(contenido, str):
             contenido = contenido.encode("utf-8")
         return cliente.post(
